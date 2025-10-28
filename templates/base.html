@@ -9,9 +9,11 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
+
 <body class="{% block body_class %}{% endblock %}">
+<div class="page-wrapper">
     <header>
-        <div class="logo">Fitness Lektor</div>
+        <div class="logo">Nikola Turnerová</div>
         <nav>
             <a href="{% url 'home' %}">O mě</a>
             <a href="{% url 'lessons' %}">Lekce</a>
@@ -50,14 +52,12 @@
     <footer class="footer">
         <div class="nav-container">
             <p class="footer-brand">&copy; {% now "Y" %} Fitness Rezervace. Všechna práva vyhrazena.</p>
-            <ul class="footer-links">
-                <li><a href="{% url 'contact' %}">Kontakt</a></li>
-                <li><a href="#">Ochrana soukromí</a></li>
-                <li><a href="#">Obchodní podmínky</a></li>
-            </ul>
+            
         </div>
+
     </footer>
-    
+</div>
     {% block extra_js %}{% endblock %}
+
 </body>
 </html>
