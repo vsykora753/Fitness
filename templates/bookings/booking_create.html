@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Potvrzení rezervace</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ time_slot.lesson.title }}</h5>
+            <p class="card-text">
+                <strong>Lektor:</strong> {{ time_slot.lesson.instructor.get_full_name }}<br>
+                <strong>Datum a čas:</strong> {{ time_slot.start_time|date:"d.m.Y H:i" }}<br>
+                <strong>Délka lekce:</strong> {{ time_slot.lesson.duration }} minut<br>
+                <strong>Cena:</strong> {{ time_slot.lesson.price }} Kč<br>
+                <strong>Vaše kredity:</strong> {{ user.credits }} Kč
+            </p>
+            
+            {% if messages %}
+            <div class="alert alert-danger">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Potvrdit rezervaci</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">Zrušit</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

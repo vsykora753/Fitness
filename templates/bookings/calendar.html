@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    #calendar {
+        margin: 20px 0;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .fc-event {
+        cursor: pointer;
+    }
+    .lesson-details {
+        margin-top: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-9">
+        <div id="calendar"></div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Detail Lekce</h5>
+            </div>
+            <div class="card-body" id="lesson-details">
+                <p class="text-muted">Vyberte lekci v kalendáři pro zobrazení detailů</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        locale: 'cs',
+        slotMinTime: '06:00:00',
+        slotMaxTime: '22:00:00',
+        allDaySlot: false,
+        height: 'auto',
+        events: "{% url 'get_events' %}",
+        eventClick: function(info) {
+            showLessonDetails(info.event);
+        }
+    });
+    calendar.render();
+
+    function showLessonDetails(event) {
+        const detailsDiv = document.getElementById('lesson-details');
+        detailsDiv.innerHTML = `
+            <h5>${event.title}</h5>
+            <p><strong>Lektor:</strong> ${event.extendedProps.instructor}</p>
+            <p><strong>Čas:</strong> ${event.start.toLocaleString('cs-CZ')}</p>
+            <p><strong>Délka:</strong> ${event.extendedProps.duration} minut</p>
+            <p><strong>Cena:</strong> ${event.extendedProps.price} Kč</p>
+            <p><strong>Volná místa:</strong> ${event.extendedProps.availableSpots}/${event.extendedProps.capacity}</p>
+            ${event.extendedProps.description ? `<p><strong>Popis:</strong> ${event.extendedProps.description}</p>` : ''}
+            ${event.extendedProps.isAvailable ? 
+                `<a href="/booking/create/${event.extendedProps.timeSlotId}" class="btn btn-primary">Rezervovat</a>` :
+                `<button class="btn btn-secondary" disabled>Obsazeno</button>`
+            }
+        `;
+    }
+});
+</script>
+{% endblock %}

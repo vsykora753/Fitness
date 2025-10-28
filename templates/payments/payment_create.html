@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Vytvoření platby</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Platba pro lektora: {{ instructor.get_full_name }}</h5>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.amount.label_tag }}
+                    {{ form.amount.errors }}
+                    {{ form.amount|add_class:"form-control" }}
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Vytvořit platbu</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

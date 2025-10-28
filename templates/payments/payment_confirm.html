@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Potvrzení platby</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Detaily platby</h5>
+            <p><strong>Klient:</strong> {{ object.client.get_full_name }}</p>
+            <p><strong>Částka:</strong> {{ object.amount }} Kč</p>
+            <p><strong>Datum vytvoření:</strong> {{ object.created_at|date:"d.m.Y H:i" }}</p>
+            
+            {% if object.qr_code %}
+            <div class="text-center mb-3">
+                <img src="{{ object.qr_code.url }}" alt="QR kód pro platbu" class="img-fluid">
+            </div>
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Potvrdit platbu</button>
+                <a href="{% url 'payment_history' %}" class="btn btn-secondary">Zpět</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
