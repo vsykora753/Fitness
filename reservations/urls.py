@@ -19,10 +19,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from bookings.views import CalendarView
+from bookings.views import HomeView, ContactView, LessonListView
 
 urlpatterns = [
-    path("", CalendarView.as_view(), name="home"),
+    path("", HomeView.as_view(), name="home"),
+    path("kontakt/", ContactView.as_view(), name="contact"),
+    path("lekce/", LessonListView.as_view(), name="lessons"),
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("bookings/", include("bookings.urls")),

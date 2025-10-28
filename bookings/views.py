@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.views.generic import TemplateView
-from .models import TimeSlot, Booking
+from django.views.generic import TemplateView, ListView, DetailView
+from .models import TimeSlot, Booking, Lesson
 from django.utils import timezone
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -47,6 +47,40 @@ def get_events(request):
         })
     
     return JsonResponse(events, safe=False)
+
+class HomeView(TemplateView):
+    template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated and self.request.user.is_instructor:
+            context['instructor'] = self.request.user
+        return context
+
+class ContactView(TemplateView):
+    template_name = 'contact.html'
+
+class LessonListView(ListView):
+    model = Lesson
+    template_name = 'lessons.html'
+    context_object_name = 'lessons'
+
+    def get_queryset(self):
+        return Lesson.objects.all().order_by('title')
+
+class LessonDetailView(DetailView):
+    model = Lesson
+    template_name = 'lessons_detail.html'
+    context_object_name = 'lesson'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Získáme budoucí časové sloty pro tuto lekci
+        context['time_slots'] = TimeSlot.objects.filter(
+            lesson=self.object,
+            start_time__gte=timezone.now()
+        ).order_by('start_time')
+        return context
 
 class BookingCreateView(LoginRequiredMixin, CreateView):
     model = Booking

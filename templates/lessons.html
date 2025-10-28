@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lekce | Fitness Lektor{% endblock %}
+
+{% block content %}
+<h1>Nabízené lekce</h1>
+
+<div class="lessons-grid">
+    {% for lesson in lessons %}
+    <div class="lesson-card">
+        <h2 class="lesson-title">{{ lesson.name }}</h2>
+        <p class="lesson-info">{{ lesson.description }}</p>
+        <div class="lesson-info">
+            <strong>Délka:</strong> {{ lesson.duration }} minut
+        </div>
+        <div class="lesson-info">
+            <strong>Kapacita:</strong> {{ lesson.capacity }} osob
+        </div>
+        <div class="lesson-price">
+            {{ lesson.price }} Kč
+        </div>
+        <a href="{% url 'lesson_detail' lesson.id %}" class="btn">Zobrazit termíny</a>
+    </div>
+    {% empty %}
+    <p>V současné době nejsou k dispozici žádné lekce.</p>
+    {% endfor %}
+</div>
+{% endblock %}
