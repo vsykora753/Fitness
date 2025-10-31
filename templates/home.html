@@ -3,19 +3,9 @@
 
 {% block title %}Fitness Lektor | Domů{% endblock %}
 
-{% block body_class %}has-hero{% endblock %}
+{% block body_class %}{% endblock %}
 
-{% block hero %}
-<section class="hero">
-    <img src="{% static 'img/fitness-hero.jpg' %}" alt="Fitness trénink" class="hero-image">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <h1 class="hero-title"></h1>
-        <p class="hero-subtitle"></p>
-        <a href="{% url 'lessons' %}" class="hero-button"></a>
-    </div>
-</section>
-{% endblock %}
+{# Hero sekce odstraněna dle požadavku: část s "Fitness trénink" (obrázek + overlay) byla vyjmuta #}
 
 {% block content %}
 <div class="about-section">

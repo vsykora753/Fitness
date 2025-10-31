@@ -12,34 +12,45 @@
 
 <body class="{% block body_class %}{% endblock %}">
 <div class="page-wrapper">
-    <div class="flex-header">
-        <div class="logo">Nikola Turnerová</div>
-        <nav>
-            <a href="{% url 'home' %}">O mě</a>
-            <a href="{% url 'lessons' %}">Lekce</a>
-            <a href="{% url 'contact' %}">Kontakt</a>
-            {% if user.is_authenticated %}
-                {% if user.is_instructor %}
-                    <a href="{% url 'instructor_dashboard' %}">Můj rozvrh</a>
+    <header class="flex-header">
+        <div class="header-top">
+            <div class="logo">Nikola Turnerová</div>
+            <div class="auth-top">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="auth-link">Odhlásit se</a>
                 {% else %}
-                    <a href="{% url 'client_dashboard' %}">Moje rezervace</a>
-                    <span class="credits">{{ user.credits }} Kč</span>
+                    <a href="{% url 'login' %}" class="login-link">Přihlásit se</a>
+                    <a href="{% url 'register' %}" class="register-link">Registrace</a>
                 {% endif %}
-                <a href="{% url 'logout' %}">Odhlásit se</a>
-            {% else %}
-                <a href="{% url 'login' %}">Přihlásit se</a>
-                <a href="{% url 'register' %}" class="btn">Registrace</a>
-            {% endif %}
-        </nav>
-    </div>
+            </div>
+        </div>
+
+        <div class="header-bottom">
+            <nav class="site-nav">
+                <div class="nav-bottom-right">
+                    <a href="{% url 'home' %}">O mě</a>
+                    <a href="{% url 'lessons' %}">Lekce</a>
+                    <a href="{% url 'contact' %}">Kontakt</a>
+                    {% if user.is_authenticated %}
+                        {% if user.is_instructor %}
+                            <a href="{% url 'instructor_dashboard' %}">Můj rozvrh</a>
+                        {% else %}
+                            <a href="{% url 'client_dashboard' %}">Moje rezervace</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
 
     {% block hero %}{% endblock %}
 
     <div class="flex-content">
-        <div class="flex-sidebar">
-            <img src="{% static 'img/hero-gb.jpg' %}" alt="Profilová fotka" class="profile-image">
-        </div>
-        
+        <aside class="flex-sidebar" aria-hidden="true">
+            {# Používáme pozadí v CSS: ../img/hero-bg.jpg #}
+            <div class="hero-image" role="presentation"></div>
+        </aside>
+
         <main class="flex-main">
             {% if messages %}
                 <div class="messages">

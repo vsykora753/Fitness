@@ -5,59 +5,197 @@
   box-sizing: border-box;
 }
 
+:root {
+  --header-h: 72px;
+  --footer-h: 40px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 body {
   font-family: 'Poppins', sans-serif;
   color: #333;
   line-height: 1.6;
   min-height: 100vh;
   background-color: #f0f0f0;
-  margin: 0;
   padding: 0;
+  overflow: hidden; /* zabrání vertikálnímu scrollu celé stránky */
 }
 
 .page-wrapper {
-  min-height: 100vh;
+  height: 100vh; /* přesně viewport */
   display: flex;
   flex-direction: column;
   width: 100%;
   position: relative;
+  overflow: hidden; /* zabrání page scrollu */
 }
 
 .flex-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 40px;
+  flex-direction: column; /* dva řádky: top + bottom */
+  align-items: stretch;
+  height: var(--header-h);
+  padding: 0 0 0 8px; /* vertikální padding nulován, výšku řídí --header-h */
   color: white;
   width: 100%;
   background-color: #2e5d3d;
-  height: 60px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   flex: 0 0 auto;
+  font-size: 0.98rem;
+  overflow: visible;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: calc(var(--header-h) / 2);
+  position: relative; /* pro absolutní umístění auth-top */
+}
+
+.auth-top {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  position: absolute;
+  right: 0; /* flush k samému pravému okraji */
+  top: 6px;
+}
+
+.auth-top .login-link,
+.auth-top .register-link {
+  color: white;
+  padding: 6px 10px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.header-bottom {
+  display: flex;
+  align-items: center;
+  height: calc(var(--header-h) / 2);
+}
+
+.nav-bottom-right {
+  margin-left: auto; /* zarovná nav doprava v druhém řádku */
+  display: flex;
+  gap: 14px;
+  align-items: center;
 }
 
 .flex-content {
   display: flex;
-  flex: 1;
   width: 100%;
-  padding: 20px;
-  gap: 20px;
+  gap: 0; /* žádná mezera mezi flex-sidebar a flex-main */
+  align-items: stretch;
+  height: calc(100vh - var(--header-h) - var(--footer-h)); /* vyplní přesně oblast mezi header a footer */
 }
 
+/* Sidebar bude mít background image místo inline <img> - hladký přechod vytvoříme pseudoelementy */
 .flex-sidebar {
-  flex: 0 0 300px;
-  background-color: #f5f5f5;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  flex: 0 0 32%;
+  min-width: 240px;
+  position: relative;
+  /* zaoblení jen na vnější (levé) straně, mezi panely žádné zaoblení */
+  border-radius: 10px 0 0 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  /* background image (cesta relativně ke css souboru) */
+  background-image: url('../img/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100%;
 }
 
+/* jemné stmívání obrázku směrem doprava pro hladké spojení */
+.flex-sidebar::after {
+  content: '';
+  position: absolute;
+  right: -40px; /* přesah do druhého panelu */
+  top: 0;
+  width: 180px; /* širší gradient pro plynulejší přechod */
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(240,240,240,0.4) 40%, rgba(255,255,255,0.95) 100%);
+}
+
+nav.site-nav {
+  display: flex;
+  align-items: center;
+  flex: 1; /* necháme nav zabrat zbývající prostor vedle loga */
+  gap: 12px;
+}
+
+.nav-left,
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-right {
+  margin-left: auto; /* (ponecháno pro kompatibilitu) */
+}
+
+nav.site-nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+nav.site-nav a:hover {
+  opacity: 0.85;
+  transform: translateY(-2px);
+}
+
+/* drobné úpravy pro login/register u pravého okraje */
+.nav-right .login-link {
+  padding: 6px 10px;
+  background: transparent;
+  border-radius: 4px;
+}
+
+.nav-right .register-link {
+  padding: 8px 12px;
+}
+
+.auth-top a, .nav-bottom-right a {
+  color: white;
+}
+
+.header-bottom .nav-bottom-right a {
+  padding: 6px 8px;
+  font-size: 0.98rem;
+}
+/* Přechod zleva do hlavního obsahu — drobný gradient překrývá levou hranu mainu a splyne s obrázkem */
+.flex-main::before {
+  content: '';
+  position: absolute;
+  left: -160px;
+  top: 0;
+  width: 160px;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,1) 100%);
+}
+
+/* Hlavní obsah vyplní výšku kontejneru a bude interně scrollovat pokud přesáhne */
 .flex-main {
   flex: 1;
-  background-color: white;
-  border-radius: 10px;
+  position: relative;
+  background: linear-gradient(135deg, rgba(240,240,240,0.95) 0%, rgba(255,255,255,0.98) 25%, white 100%);
+  /* levá hrana čtvercová, abychom neměli mezeru/zaoblení mezi panely */
+  border-radius: 0 10px 10px 0;
   padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  height: 100%;
+  overflow: auto;
 }
 
 .profile-image {
@@ -73,15 +211,16 @@ body {
   align-items: center;
   background-color: #2e5d3d;
   color: white;
-  height: 60px;
+  height: var(--footer-h); /* užší patička */
   width: 100%;
-  padding: 0 20px;
+  padding: 0 16px; /* méně vodorovného prostoru */
   flex: 0 0 auto;
+  font-size: 0.95rem;
 }
 
 .logo {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 20px; /* menší logo pro užší hlavičku */
+  font-weight: 600;
   text-decoration: none;
   color: white;
 }
@@ -223,7 +362,7 @@ nav a:hover {
 /* Dlaždice lekcí */
 .lessons-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
 }
 
@@ -297,14 +436,15 @@ nav a:hover {
 .footer {
   background-color: #2e5d3d;
   color: white;
-  height: 60px; /* fixní výška */
-  margin-top: 0; /* odstraněn margin-top */
+  height: 40px; /* užší varianta pro případné použití */
+  margin-top: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 50%;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  font-size: 0.95rem;
 }
 
 .footer-container {
@@ -334,37 +474,84 @@ nav a:hover {
 
 /* Responzivní design */
 @media (max-width: 768px) {
+  html, body {
+    height: auto;
+    overflow-y: auto !important; /* vždy povolit vertikální scroll na mobilu */
+  }
+
+  .page-wrapper {
+    height: auto;
+    min-height: 100vh; /* minimální výška stále viewport */
+    overflow: visible; /* povolit přetečení obsahu */
+  }
+
   .flex-header {
-    padding: 15px 20px;
+    padding: 10px 8px;
     flex-direction: column;
     height: auto;
   }
 
+  .header-top {
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    min-height: 40px; /* minimální výška pro umístění auth odkazů */
+  }
+
+  .auth-top {
+    position: absolute; /* zachováme absolutní pozicování */
+    right: 10px; /* odsazení od pravého okraje */
+    top: 10px; /* odsazení od horního okraje */
+    width: auto; /* automatická šířka podle obsahu */
+    justify-content: flex-end;
+    margin-top: 0;
+    gap: 8px;
+  }
+
+  .auth-top .login-link,
+  .auth-top .register-link {
+    font-size: 0.82rem;
+    padding: 3px 6px; /* ještě menší padding pro kompaktnější vzhled */
+  }
+
+  .header-top {
+    padding-right: 140px; /* prostor pro auth odkazy */
+  }
+
   .logo {
-    margin-bottom: 15px;
+    margin-bottom: 6px;
   }
 
-  nav {
-    display: flex;
-    flex-wrap: wrap;
+  .header-bottom {
+    width: 100%;
+  }
+
+  .nav-bottom-right {
+    margin-left: 0; /* vrátit umístění na mobilu */
     justify-content: center;
+    width: 100%;
   }
 
-  nav a {
-    margin: 5px 10px;
+  .nav-bottom-right a {
+    margin: 6px 10px;
   }
 
   .flex-content {
     flex-direction: column;
     padding: 10px;
+    height: auto; /* na mobilu nechceme fixní výšku */
+    overflow: visible; /* povolit přetečení obsahu */
   }
 
   .flex-sidebar {
     flex: 0 0 auto;
+    min-height: 200px; /* minimální výška na mobilu */
   }
 
   .flex-main {
     flex: 1;
+    overflow: visible; /* povolit přetečení obsahu */
+    height: auto; /* automatická výška podle obsahu */
   }
 
   .hero {
@@ -383,5 +570,16 @@ nav a:hover {
   .hero p {
     font-size: 18px;
     padding: 0 10px;
+  }
+
+  /* Upravená mřížka lekcí pro mobil */
+  .lessons-grid {
+    grid-template-columns: 1fr; /* jedna karta na řádek */
+    gap: 20px; /* menší mezery */
+    padding: 0 10px; /* odsazení od okrajů */
+  }
+
+  .lesson-card {
+    margin-bottom: 5px; /* menší mezera mezi kartami */
   }
 }
