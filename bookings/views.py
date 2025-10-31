@@ -65,8 +65,43 @@ class LessonListView(ListView):
     template_name = 'lessons.html'
     context_object_name = 'lessons'
 
-    def get_queryset(self):
-        return Lesson.objects.all().order_by('title')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Získáme všechny časové sloty pro aktuální měsíc
+        current_date = timezone.now()
+        start_of_month = current_date.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_of_month = (start_of_month + timezone.timedelta(days=32)).replace(day=1) - timezone.timedelta(seconds=1)
+        
+        time_slots = TimeSlot.objects.filter(
+            start_time__range=(start_of_month, end_of_month),
+            is_available=True
+        ).select_related('lesson')
+        
+        # Vytvoříme slovník pro každý den v měsíci
+        lessons_by_day = {}
+        for slot in time_slots:
+            day = slot.start_time.day
+            if day not in lessons_by_day:
+                lessons_by_day[day] = []
+            
+            # Zjistíme počet obsazených míst
+            booked_count = slot.booking_set.filter(status='confirmed').count()
+            available_spots = slot.lesson.capacity - booked_count
+            
+            lessons_by_day[day].append({
+                'id': slot.id,
+                'title': slot.lesson.title,
+                'time': slot.start_time.strftime('%H:%M'),
+                'duration': slot.lesson.duration,
+                'price': float(slot.lesson.price),
+                'available_spots': available_spots,
+                'instructor': slot.lesson.instructor.get_full_name()
+            })
+        
+        context['lessons_by_day'] = lessons_by_day
+        context['current_month'] = current_date.month
+        context['current_year'] = current_date.year
+        return context
 
 class LessonDetailView(DetailView):
     model = Lesson

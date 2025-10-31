@@ -42,7 +42,7 @@ body {
   padding: 0 0 0 8px; /* vertikální padding nulován, výšku řídí --header-h */
   color: white;
   width: 100%;
-  background-color: #2e5d3d;
+  background-color: #4682b4;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   flex: 0 0 auto;
   font-size: 0.98rem;
@@ -209,7 +209,7 @@ nav.site-nav a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #2e5d3d;
+  background-color: #4682b4;;
   color: white;
   height: var(--footer-h); /* užší patička */
   width: 100%;
@@ -293,7 +293,7 @@ nav a:hover {
 .btn {
   display: inline-block;
   padding: 12px 30px;
-  background-color: #2e5d3d;
+  background-color: #4682b4;;
   color: white;
   text-decoration: none;
   border-radius: 5px;
@@ -302,7 +302,7 @@ nav a:hover {
 }
 
 .btn:hover {
-  background-color: #234a31;
+  background-color: #C19B20; /* tmavší odstín zlata pro hover efekt */
 }
 
 /* O nás sekce */
@@ -434,7 +434,7 @@ nav a:hover {
 
 /* Patička */
 .footer {
-  background-color: #2e5d3d;
+  background-color: #D4AF37;
   color: white;
   height: 40px; /* užší varianta pro případné použití */
   margin-top: 0;

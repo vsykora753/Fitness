@@ -3,29 +3,58 @@
 
 {% block title %}Lekce | Fitness Lektor{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/calendar.js' %}"></script>
+{% endblock %}
+
 {% block body_class %}no-hero{% endblock %}
 
 {% block content %}
-<h1>Nabízené lekce</h1>
+<h1>Kalendář lekcí</h1>
 
-<div class="lessons-grid">
-    {% for lesson in lessons %}
-    <div class="lesson-card">
-        <h2 class="lesson-title">{{ lesson.name }}</h2>
-        <p class="lesson-info">{{ lesson.description }}</p>
-        <div class="lesson-info">
-            <strong>Délka:</strong> {{ lesson.duration }} minut
-        </div>
-        <div class="lesson-info">
-            <strong>Kapacita:</strong> {{ lesson.capacity }} osob
-        </div>
-        <div class="lesson-price">
-            {{ lesson.price }} Kč
-        </div>
-        <a href="{% url 'lesson_detail' lesson.id %}" class="btn">Zobrazit termíny</a>
-    </div>
-    {% empty %}
-    <p>V současné době nejsou k dispozici žádné lekce.</p>
-    {% endfor %}
+<div class="calendar-controls">
+    <button id="prevMonth" class="btn">&lt; Předchozí</button>
+    <h2 id="currentMonth"></h2>
+    <button id="nextMonth" class="btn">Další &gt;</button>
 </div>
+
+<div class="calendar">
+    <div class="calendar-header">
+        <div>Po</div>
+        <div>Út</div>
+        <div>St</div>
+        <div>Čt</div>
+        <div>Pá</div>
+        <div>So</div>
+        <div>Ne</div>
+    </div>
+    <div id="calendar-days" class="calendar-days">
+        <!-- Dny budou dynamicky generovány JavaScriptem -->
+    </div>
+</div>
+
+<!-- Šablona pro zobrazení lekcí v buňce kalendáře -->
+<template id="lessons-popup-template">
+    <div class="lessons-popup">
+        <div class="lesson-item">
+            <div class="lesson-time"></div>
+            <div class="lesson-title"></div>
+            <div class="lesson-instructor"></div>
+            <div class="lesson-spots"></div>
+        </div>
+    </div>
+</template>
+
+<!-- Data pro JavaScript -->
+<script>
+    const lessonsData = {
+        month: {{ current_month }},
+        year: {{ current_year }},
+        lessons: {{ lessons_by_day|safe }}
+    };
+</script>
 {% endblock %}
