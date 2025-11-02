@@ -4,6 +4,8 @@
     align-items: center;
     margin-bottom: 20px;
     padding: 10px;
+    flex-wrap: wrap; /* pro menší obrazovky */
+    gap: 10px;
 }
 
 .calendar-controls button {
@@ -13,6 +15,8 @@
     color: white;
     border-radius: 4px;
     cursor: pointer;
+    flex: 1 1 auto;
+    min-width: 100px;
 }
 
 .calendar-controls button:hover {
@@ -25,6 +29,7 @@
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     margin-bottom: 30px;
+    overflow-x: auto; /* scroll na malých obrazovkách */
 }
 
 .calendar-header {
@@ -51,6 +56,8 @@
     position: relative;
     transition: all 0.3s ease;
     min-height: 100px;
+    display: flex;
+    flex-direction: column;
 }
 
 .calendar-day:hover {
@@ -84,10 +91,13 @@
 }
 
 .calendar-day .lesson-preview {
-    font-size: 0.8em;
-    color: #666;
-    margin-top: 20px;
-    text-align: left;
+    margin-top: 25px;
+    font-size: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow-y: auto;
+    max-height: calc(100% - 25px);
 }
 
 .calendar-day.selected {
@@ -119,8 +129,14 @@
 }
 
 .lesson-item {
-    padding: 8px;
+    padding: 12px;
     border-bottom: 1px solid #eee;
+    background: white;
+    transition: background-color 0.2s;
+}
+
+.lesson-item:hover {
+    background: #f8f9fa;
 }
 
 .lesson-item:last-child {
@@ -130,22 +146,35 @@
 .lesson-time {
     font-weight: bold;
     color: #4682b4;
+    font-size: 1.1em;
+    margin-bottom: 4px;
 }
 
 .lesson-title {
-    font-size: 0.9em;
+    font-size: 1em;
     margin: 4px 0;
+    color: #333;
+    font-weight: 500;
 }
 
-.lesson-instructor {
-    font-size: 0.8em;
+.lesson-location,
+.lesson-instructor,
+.lesson-duration,
+.lesson-spots,
+.lesson-price {
+    font-size: 0.85em;
     color: #666;
+    margin: 2px 0;
 }
 
 .lesson-spots {
-    font-size: 0.8em;
     color: #4CAF50;
-    margin-top: 4px;
+    font-weight: 500;
+}
+
+.lesson-price {
+    color: #4682b4;
+    font-weight: 500;
 }
 
 .daily-lessons {
@@ -166,6 +195,30 @@
     gap: 20px;
 }
 
+/* Karty/ouška pro filtrování podle kategorie */
+.category-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.category-tab {
+    background: #f3f6fb;
+    border: 1px solid #e6eefb;
+    color: #2e5d3d;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.category-tab.active {
+    background: #4682b4;
+    color: white;
+    border-color: #3a6d96;
+}
+
 .lesson-card {
     background: white;
     border: 1px solid #eee;
@@ -179,23 +232,75 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.lesson-time {
-    font-size: 1.2em;
-    color: #4682b4;
-    margin: 5px 0;
+/**  test **/
+.lessons-preview {
+    margin-top: 4px;
+    font-size: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.lesson-preview-item {
+    background: #eef7ff;
+    padding: 2px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lesson-preview-item:hover {
+    background: #d9eeff;
+    border-color: #b7dcff;
+}
+
+/** Responsivní úpravy **/
+@media (max-width: 1024px) {
+    .calendar {
+        padding: 15px;
+    }
+    .calendar-day {
+        min-height: 90px;
+    }
 }
 
 @media (max-width: 768px) {
+    .calendar-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
     .calendar-days {
         gap: 2px;
     }
     
     .calendar-day {
-        font-size: 0.9em;
+        font-size: 0.85em;
         padding: 2px;
+        min-height: 80px;
     }
     
     .lessons-list {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-day {
+        font-size: 0.75em;
+        min-height: 70px;
+    }
+    
+    .lesson-preview-item {
+        font-size: 0.65rem;
+    }
+    
+    .calendar-controls button {
+        padding: 6px 12px;
+        font-size: 0.8rem;
     }
 }

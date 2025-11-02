@@ -67,40 +67,52 @@ class LessonListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Získáme všechny časové sloty pro aktuální měsíc
+        # Získáme všechny lekce pro aktuální měsíc
         current_date = timezone.now()
-        start_of_month = current_date.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        end_of_month = (start_of_month + timezone.timedelta(days=32)).replace(day=1) - timezone.timedelta(seconds=1)
+        start_of_month = current_date.replace(day=1)
+        next_month = current_date.replace(day=1) + timezone.timedelta(days=32)
+        end_of_month = next_month.replace(day=1) - timezone.timedelta(days=1)
         
-        time_slots = TimeSlot.objects.filter(
-            start_time__range=(start_of_month, end_of_month),
-            is_available=True
-        ).select_related('lesson')
+        lessons = Lesson.objects.filter(
+            date__range=(start_of_month.date(), end_of_month.date())
+        ).select_related('instructor')
         
         # Vytvoříme slovník pro každý den v měsíci
         lessons_by_day = {}
-        for slot in time_slots:
-            day = slot.start_time.day
+        for lesson in lessons:
+            day = lesson.date.day
             if day not in lessons_by_day:
                 lessons_by_day[day] = []
             
             # Zjistíme počet obsazených míst
-            booked_count = slot.booking_set.filter(status='confirmed').count()
-            available_spots = slot.lesson.capacity - booked_count
+            booked_count = Booking.objects.filter(
+                time_slot__lesson=lesson,
+                status='confirmed'
+            ).count()
+            available_spots = lesson.capacity - booked_count
             
             lessons_by_day[day].append({
-                'id': slot.id,
-                'title': slot.lesson.title,
-                'time': slot.start_time.strftime('%H:%M'),
-                'duration': slot.lesson.duration,
-                'price': float(slot.lesson.price),
+                'id': lesson.id,
+                'title': lesson.title,
+                'time': lesson.start_time.strftime('%H:%M'),
+                'duration': lesson.duration,
+                'price': float(lesson.price),
                 'available_spots': available_spots,
-                'instructor': slot.lesson.instructor.get_full_name()
+                'instructor': lesson.instructor.get_full_name(),
+                'category': lesson.category,
+                'location': lesson.location
             })
         
+        # Kategorie pro ouška (z definice v modelu)
+        try:
+            categories = list(Lesson.LESSON_CATEGORIES)
+        except Exception:
+            categories = []
+
         context['lessons_by_day'] = lessons_by_day
         context['current_month'] = current_date.month
         context['current_year'] = current_date.year
+        context['categories'] = categories
         return context
 
 class LessonDetailView(DetailView):

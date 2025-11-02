@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('lessonsData (raw):', lessonsData);
     let currentDate = new Date(lessonsData.year, lessonsData.month - 1, 1);
     let selectedPopup = null;
 
@@ -7,44 +8,37 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentMonthElement = document.getElementById('currentMonth');
     const calendarDays = document.getElementById('calendar-days');
 
-    // Názvy měsíců v češtině
     const months = [
         'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
         'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'
     ];
 
+    let activeCategory = 'all';
+
     function updateCalendar() {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
-        
-        // Aktualizace názvu měsíce
-        currentMonthElement.textContent = `${months[month]} ${year}`;
 
-        // Vyčištění kalendáře
+        currentMonthElement.textContent = `${months[month]} ${year}`;
         calendarDays.innerHTML = '';
 
-        // První den měsíce
         const firstDay = new Date(year, month, 1);
-        // Poslední den měsíce
         const lastDay = new Date(year, month + 1, 0);
-        
-        // Začínáme od pondělí (1) místo neděle (0)
+
         let startDay = firstDay.getDay() - 1;
         if (startDay === -1) startDay = 6;
 
-        // Přidání dnů z předchozího měsíce
         const prevMonthDays = startDay;
         const prevMonth = new Date(year, month, 0);
+
         for (let i = prevMonthDays - 1; i >= 0; i--) {
             addDayToCalendar(prevMonth.getDate() - i, true);
         }
 
-        // Přidání dnů aktuálního měsíce
         for (let day = 1; day <= lastDay.getDate(); day++) {
             addDayToCalendar(day, false);
         }
 
-        // Přidání dnů následujícího měsíce
         const remainingDays = 42 - (prevMonthDays + lastDay.getDate());
         for (let day = 1; day <= remainingDays; day++) {
             addDayToCalendar(day, true);
@@ -54,48 +48,60 @@ document.addEventListener('DOMContentLoaded', function() {
     function addDayToCalendar(day, isOtherMonth) {
         const dayElement = document.createElement('div');
         dayElement.className = 'calendar-day' + (isOtherMonth ? ' other-month' : '');
-        
-        // Přidání čísla dne
+
         const dayNumber = document.createElement('div');
         dayNumber.className = 'day-number';
         dayNumber.textContent = day;
         dayElement.appendChild(dayNumber);
 
-        // Přidání lekcí pro tento den
-        if (!isOtherMonth && lessonsData.lessons[day]) {
-            const lessons = lessonsData.lessons[day];
-            dayElement.classList.add('has-lessons');
+        if (!isOtherMonth) {
+            const lessons = getLessonsForDay(day);
+            if (lessons && lessons.length > 0) {
+                dayElement.classList.add('has-lessons');
 
-            // Přidání teček pro indikaci lekcí
-            const dotsContainer = document.createElement('div');
-            dotsContainer.className = 'lesson-dots';
-            for (let i = 0; i < Math.min(lessons.length, 3); i++) {
-                const dot = document.createElement('div');
-                dot.className = 'lesson-dot';
-                dotsContainer.appendChild(dot);
+                const dotsContainer = document.createElement('div');
+                dotsContainer.className = 'lesson-dots';
+                for (let i = 0; i < Math.min(lessons.length, 3); i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'lesson-dot';
+                    dotsContainer.appendChild(dot);
+                }
+                dayElement.appendChild(dotsContainer);
+
+                // ✅ Zobrazení všech lekcí přímo v buňce
+                const lessonsPreview = document.createElement('div');
+                lessonsPreview.className = 'lessons-preview';
+
+                lessons.forEach(lesson => {
+                    const item = document.createElement('div');
+                    item.className = 'lesson-preview-item';
+                    item.textContent = `${lesson.time} - ${lesson.title}`;
+
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Přesměrování na detail lekce
+                        const detailUrl = lessonDetailBase.replace(/0\/$/, `${lesson.id}/`);
+                        window.location.href = detailUrl;
+                    });
+
+                    lessonsPreview.appendChild(item);
+                });
+
+                dayElement.appendChild(lessonsPreview);
+
+                // Kliknutí mimo lekce otevře popup
+                dayElement.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('lesson-preview-item')) {
+                        showLessonsPopup(dayElement, lessons);
+                    }
+                });
             }
-            dayElement.appendChild(dotsContainer);
-
-            // Přidání náhledu první lekce
-            if (lessons.length > 0) {
-                const preview = document.createElement('div');
-                preview.className = 'lesson-preview';
-                preview.textContent = `${lessons[0].time} - ${lessons[0].title}`;
-                dayElement.appendChild(preview);
-            }
-
-            // Přidání popup s lekcemi
-            dayElement.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showLessonsPopup(dayElement, lessons);
-            });
         }
 
-        // Kontrola, zda je den dnešní
         const today = new Date();
-        if (!isOtherMonth && 
-            day === today.getDate() && 
-            currentDate.getMonth() === today.getMonth() && 
+        if (!isOtherMonth &&
+            day === today.getDate() &&
+            currentDate.getMonth() === today.getMonth() &&
             currentDate.getFullYear() === today.getFullYear()) {
             dayElement.classList.add('today');
         }
@@ -104,31 +110,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showLessonsPopup(dayElement, lessons) {
-        // Zavření předchozího popupu
-        if (selectedPopup) {
-            selectedPopup.remove();
-        }
+        if (selectedPopup) selectedPopup.remove();
 
-        // Vytvoření nového popupu
         const popupTemplate = document.getElementById('lessons-popup-template');
         const popup = popupTemplate.content.cloneNode(true);
         const popupContainer = popup.querySelector('.lessons-popup');
 
-        // Přidání lekcí do popupu
         lessons.forEach(lesson => {
             const lessonItem = document.createElement('div');
             lessonItem.className = 'lesson-item';
+            const detailUrl = lessonDetailBase.replace(/0\/$/, `${lesson.id}/`);
+
             lessonItem.innerHTML = `
                 <div class="lesson-time">${lesson.time}</div>
                 <div class="lesson-title">${lesson.title}</div>
-                <div class="lesson-instructor">${lesson.instructor}</div>
+                <div class="lesson-location">Místo: ${lesson.location}</div>
+                <div class="lesson-instructor">Lektor: ${lesson.instructor}</div>
+                <div class="lesson-duration">Délka: ${lesson.duration} minut</div>
                 <div class="lesson-spots">Volná místa: ${lesson.available_spots}</div>
-                <a href="/lesson/${lesson.id}/" class="btn">Rezervovat</a>
+                <div class="lesson-price">Cena: ${lesson.price} Kč</div>
+                <a href="${detailUrl}" class="btn">Rezervovat</a>
             `;
             popupContainer.appendChild(lessonItem);
         });
 
-        // Umístění popupu
         dayElement.appendChild(popupContainer);
         selectedPopup = popupContainer;
 
@@ -142,19 +147,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Ovládání kalendáře
+    function getLessonsForDay(day) {
+        const all = lessonsData.lessons[day] || [];
+        if (activeCategory === 'all') return all;
+        return all.filter(l => l.category === activeCategory);
+    }
+
+    const categoryTabs = document.querySelectorAll('.category-tab');
+    categoryTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            categoryTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            activeCategory = tab.dataset.category || 'all';
+            updateCalendar();
+        });
+    });
+
     prevMonthBtn.addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
-        // Zde by se měly načíst nová data pro předchozí měsíc z backendu
         updateCalendar();
     });
 
     nextMonthBtn.addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() + 1);
-        // Zde by se měly načíst nová data pro následující měsíc z backendu
         updateCalendar();
     });
 
-    // Inicializace kalendáře
     updateCalendar();
 });

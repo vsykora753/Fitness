@@ -27,29 +27,14 @@
             <p>{{ lesson.instructor.get_full_name }}</p>
         </div>
     </div>
-
-    <div class="available-slots">
-        <h2>Dostupné termíny</h2>
-        {% if time_slots %}
-        <div class="time-slots-grid">
-            {% for slot in time_slots %}
-            <div class="time-slot-card">
-                <div class="slot-date">{{ slot.start_time|date:"j. n. Y" }}</div>
-                <div class="slot-time">{{ slot.start_time|time:"H:i" }}</div>
-                <div class="slot-availability">
-                    {% with booked_count=slot.booking_set.count %}
-                    Volná místa: {{ lesson.capacity|add:"-"|add:booked_count }} z {{ lesson.capacity }}
-                    {% endwith %}
-                </div>
-                {% if user.is_authenticated and not user.is_instructor %}
-                <a href="{% url 'booking_create' slot.id %}" class="btn">Rezervovat</a>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
+    
+        {% if user.is_authenticated and not user.is_instructor %}
+        <!-- Tlačítko pro rezervaci lekce -->
+        <a href="{% url 'booking_create' lesson.id %}" class="btn">Rezervovat</a>
         {% else %}
-        <p>V současné době nejsou k dispozici žádné termíny.</p>
+        <p>Pro rezervaci se prosím přihlašte.</p>
         {% endif %}
     </div>
+    
 </div>
 {% endblock %}

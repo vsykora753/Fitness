@@ -16,6 +16,13 @@
 {% block content %}
 <h1>Kalendář lekcí</h1>
 
+<div id="category-tabs" class="category-tabs">
+    <button class="category-tab active" data-category="all">Vše</button>
+    {% for key, label in categories %}
+    <button class="category-tab" data-category="{{ key }}">{{ label }}</button>
+    {% endfor %}
+</div>
+
 <div class="calendar-controls">
     <button id="prevMonth" class="btn">&lt; Předchozí</button>
     <h2 id="currentMonth"></h2>
@@ -50,11 +57,21 @@
 </template>
 
 <!-- Data pro JavaScript -->
+{{ lessons_by_day|json_script:"lessons-by-day-data" }}
 <script>
+    // Načteme bezpečně serializovaná data
+    const lessonsByDay = JSON.parse(document.getElementById('lessons-by-day-data').textContent || '{}');
     const lessonsData = {
         month: {{ current_month }},
         year: {{ current_year }},
-        lessons: {{ lessons_by_day|safe }}
+        lessons: lessonsByDay
     };
+    // base url pro detail lekce (např. /bookings/lesson/0/) - nahradíme poslední ID
+    const lessonDetailBase = "{% url 'lesson_detail' 0 %}";
+
+    
 </script>
+
+
+
 {% endblock %}

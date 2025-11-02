@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from decimal import Decimal
 
+from django.utils import timezone
+
 class Lesson(models.Model):
     instructor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -16,9 +18,22 @@ class Lesson(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     duration = models.IntegerField(help_text="Délka lekce v minutách")
     capacity = models.IntegerField(help_text="Maximální počet účastníků")
+    date = models.DateField(help_text="Datum konání lekce", default=timezone.now)
+    start_time = models.TimeField(help_text="Čas začátku lekce", default="09:00")
+    location = models.CharField(max_length=200, help_text="Místo konání lekce", default="Fitness centrum")
+    # Kategorie / typ lekce (ouška)
+    LESSON_CATEGORIES = (
+        ('yoga', 'Jóga'),
+        ('cardio', 'Cardio'),
+        ('strength', 'Silový trénink'),
+        ('pilates', 'Pilates'),
+        ('stretch', 'Stretch/rozcvička'),
+        ('other', 'Jiné'),
+    )
+    category = models.CharField(max_length=20, choices=LESSON_CATEGORIES, default='other')
     
     def __str__(self):
-        return f"{self.title} - {self.instructor.get_full_name()}"
+        return f"{self.title} - {self.instructor.get_full_name()} ({self.get_category_display()})"
 
 class TimeSlot(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
