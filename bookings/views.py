@@ -133,7 +133,7 @@ class BookingCreateView(LoginRequiredMixin, CreateView):
     model = Booking
     fields = []
     template_name = 'bookings/booking_create.html'
-    success_url = reverse_lazy('client_dashboard')
+    success_url = reverse_lazy('accounts:client_dashboard')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

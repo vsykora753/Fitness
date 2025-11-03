@@ -14,13 +14,13 @@ class RegisterView(CreateView):
 	model = User
 	form_class = UserRegisterForm
 	template_name = 'accounts/register.html'
-	success_url = reverse_lazy('login')
+	success_url = reverse_lazy('accounts:login')
 
 class ProfileView(LoginRequiredMixin, UpdateView):
 	model = User
 	fields = ['first_name', 'last_name', 'email', 'phone', 'bio']
 	template_name = 'accounts/profile.html'
-	success_url = reverse_lazy('profile')
+	success_url = reverse_lazy('accounts:profile')
     
 	def get_object(self):
 		return self.request.user

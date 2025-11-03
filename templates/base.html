@@ -17,10 +17,10 @@
             <div class="logo">Nikola Turnerová</div>
             <div class="auth-top">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'logout' %}" class="auth-link">Odhlásit se</a>
+                    <a href="{% url 'accounts:logout' %}" class="auth-link">Odhlásit se</a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="login-link">Přihlásit se</a>
-                    <a href="{% url 'register' %}" class="register-link">Registrace</a>
+                    <a href="{% url 'accounts:login' %}" class="login-link">Přihlásit se</a>
+                    <a href="{% url 'accounts:register' %}" class="register-link">Registrace</a>
                 {% endif %}
             </div>
         </div>
@@ -33,9 +33,9 @@
                     <a href="{% url 'contact' %}">Kontakt</a>
                     {% if user.is_authenticated %}
                         {% if user.is_instructor %}
-                            <a href="{% url 'instructor_dashboard' %}">Můj rozvrh</a>
+                            <a href="{% url 'accounts:instructor_dashboard' %}">Můj rozvrh</a>
                         {% else %}
-                            <a href="{% url 'client_dashboard' %}">Moje rezervace</a>
+                            <a href="{% url 'accounts:client_dashboard' %}">Moje rezervace</a>
                         {% endif %}
                     {% endif %}
                 </div>

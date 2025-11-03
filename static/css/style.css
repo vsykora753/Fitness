@@ -472,11 +472,207 @@ nav a:hover {
   opacity: 0.8;
 }
 
+/* Login Form Styles */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  padding: 40px 20px;
+}
+
+.login-container {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 50px 60px;
+  width: 100%;
+  max-width: 500px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.register-container {
+  max-width: 600px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 0;
+}
+
+.form-row .form-group {
+  margin-bottom: 25px;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.login-header h2 {
+  font-size: 32px;
+  color: #2e5d3d;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.login-header p {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+.login-messages {
+  margin-bottom: 25px;
+}
+
+.login-messages .message {
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.login-form {
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="email"],
+.form-group select {
+  width: 100%;
+  padding: 15px 18px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #4682b4;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.1);
+}
+
+.form-errors {
+  margin-top: 8px;
+}
+
+.form-errors .error {
+  display: block;
+  color: #dc3545;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #4682b4 0%, #5a9bd4 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(70, 130, 180, 0.3);
+}
+
+.btn-login:hover {
+  background: linear-gradient(135deg, #3a6d99 0%, #4682b4 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(70, 130, 180, 0.4);
+}
+
+.btn-login:active {
+  transform: translateY(0);
+}
+
+.login-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.login-footer p {
+  color: #666;
+  font-size: 15px;
+  margin: 0;
+}
+
+.login-footer a {
+  color: #4682b4;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.login-footer a:hover {
+  color: #3a6d99;
+  text-decoration: underline;
+}
+
 /* Responzivní design */
 @media (max-width: 768px) {
   html, body {
     height: auto;
     overflow-y: auto !important; /* vždy povolit vertikální scroll na mobilu */
+  }
+  
+  .login-container {
+    padding: 35px 25px;
+    margin: 20px;
+  }
+  
+  .login-header h2 {
+    font-size: 26px;
+  }
+  
+  .form-group input[type="text"],
+  .form-group input[type="password"],
+  .form-group input[type="email"],
+  .form-group select {
+    padding: 12px 15px;
+    font-size: 15px;
+  }
+  
+  .btn-login {
+    padding: 14px;
+    font-size: 16px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
   }
 
   .page-wrapper {
