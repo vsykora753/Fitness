@@ -55,7 +55,12 @@ document.addEventListener('DOMContentLoaded', function() {
         dayElement.appendChild(dayNumber);
 
         if (!isOtherMonth) {
-            const lessons = getLessonsForDay(day);
+            // Sestavíme YYYY-MM-DD pro aktuální den
+            const year = currentDate.getFullYear();
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            const dayStr = day.toString().padStart(2, '0');
+            const dateKey = `${year}-${month}-${dayStr}`;
+            const lessons = getLessonsForDay(dateKey);
             if (lessons && lessons.length > 0) {
                 dayElement.classList.add('has-lessons');
 
@@ -75,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 lessons.forEach(lesson => {
                     const item = document.createElement('div');
                     item.className = 'lesson-preview-item';
-                    item.textContent = `${lesson.time} - ${lesson.title}`;
+                    item.textContent = `${lesson.time} - ${lesson.title} (${lesson.available_spots}/${lesson.capacity})`;
 
                     item.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -127,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="lesson-location">Místo: ${lesson.location}</div>
                 <div class="lesson-instructor">Lektor: ${lesson.instructor}</div>
                 <div class="lesson-duration">Délka: ${lesson.duration} minut</div>
-                <div class="lesson-spots">Volná místa: ${lesson.available_spots}</div>
+                <div class="lesson-spots">Volná místa: ${lesson.available_spots}/${lesson.capacity}</div>
                 <div class="lesson-price">Cena: ${lesson.price} Kč</div>
                 <a href="${detailUrl}" class="btn">Rezervovat</a>
             `;

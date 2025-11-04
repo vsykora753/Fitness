@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="login-wrapper">
+  <div class="login-container register-container">
+    <div class="login-header">
+      <h2>Můj profil</h2>
+      <p>Aktualizujte své údaje, spravujte heslo a kredit.</p>
+    </div>
+
+    <div class="login-messages">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <div class="lesson-card" style="margin-bottom: 20px;">
+      <div class="lesson-title">Můj kredit</div>
+      <div class="lesson-info" style="font-size: 18px;">Aktuální zůstatek: <strong>{{ request.user.credits }} Kč</strong></div>
+      <div style="margin-top: 12px; display:flex; gap:10px; flex-wrap:wrap;">
+        {% if default_instructor %}
+          <a class="btn" href="{% url 'payment_create' default_instructor.id %}">Dobít kredit</a>
+        {% else %}
+          <span style="color:#666;">Není dostupný žádný instruktor pro platbu.</span>
+        {% endif %}
+        <a class="btn" href="{% url 'payment_history' %}">Historie plateb</a>
+      </div>
+    </div>
+
+    <form method="post" class="login-form">
+      {% csrf_token %}
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_first_name">Jméno</label>
+          {{ form.first_name }}
+        </div>
+        <div class="form-group">
+          <label for="id_last_name">Příjmení</label>
+          {{ form.last_name }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="id_email">E‑mail</label>
+        {{ form.email }}
+      </div>
+      <div class="form-group">
+        <label for="id_phone">Telefon</label>
+        {{ form.phone }}
+      </div>
+      <div class="form-group">
+        <label for="id_bio">Bio</label>
+        {{ form.bio }}
+      </div>
+
+      <button type="submit" class="btn-login">Uložit změny</button>
+    </form>
+
+    <div class="lesson-card" style="margin-top: 16px;">
+      <div class="lesson-title">Zabezpečení</div>
+      <p class="lesson-info">Změňte si heslo pro zvýšení bezpečnosti svého účtu.</p>
+      <a class="btn" href="{% url 'accounts:password_change' %}">Změnit heslo</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

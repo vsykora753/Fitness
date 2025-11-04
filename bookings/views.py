@@ -6,8 +6,9 @@ from django.utils import timezone
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from django.views import View
 
 class CalendarView(TemplateView):
     template_name = 'bookings/calendar.html'
@@ -67,40 +68,43 @@ class LessonListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Získáme všechny lekce pro aktuální měsíc
+        # Získáme všechny time_sloty pro aktuální měsíc
         current_date = timezone.now()
         start_of_month = current_date.replace(day=1)
         next_month = current_date.replace(day=1) + timezone.timedelta(days=32)
         end_of_month = next_month.replace(day=1) - timezone.timedelta(days=1)
         
-        lessons = Lesson.objects.filter(
-            date__range=(start_of_month.date(), end_of_month.date())
-        ).select_related('instructor')
-        
-        # Vytvoříme slovník pro každý den v měsíci
+        # Získáme pouze budoucí sloty v daném měsíci
+        now = timezone.now()
+        time_slots = TimeSlot.objects.filter(
+            start_time__gte=max(start_of_month, now),
+            start_time__lte=end_of_month
+        ).select_related('lesson', 'lesson__instructor').order_by('start_time')
+
+        # Klíčujeme podle YYYY-MM-DD
         lessons_by_day = {}
-        for lesson in lessons:
-            day = lesson.date.day
-            if day not in lessons_by_day:
-                lessons_by_day[day] = []
-            
-            # Zjistíme počet obsazených míst
+        for slot in time_slots:
+            day_key = slot.start_time.strftime('%Y-%m-%d')
+            if day_key not in lessons_by_day:
+                lessons_by_day[day_key] = []
+
             booked_count = Booking.objects.filter(
-                time_slot__lesson=lesson,
+                time_slot=slot,
                 status='confirmed'
             ).count()
-            available_spots = lesson.capacity - booked_count
-            
-            lessons_by_day[day].append({
-                'id': lesson.id,
-                'title': lesson.title,
-                'time': lesson.start_time.strftime('%H:%M'),
-                'duration': lesson.duration,
-                'price': float(lesson.price),
+            available_spots = slot.lesson.capacity - booked_count
+
+            lessons_by_day[day_key].append({
+                'id': slot.lesson.id,
+                'title': slot.lesson.title,
+                'time': slot.start_time.strftime('%H:%M'),
+                'duration': slot.lesson.duration,
+                'price': float(slot.lesson.price),
                 'available_spots': available_spots,
-                'instructor': lesson.instructor.get_full_name(),
-                'category': lesson.category,
-                'location': lesson.location
+                'capacity': slot.lesson.capacity,
+                'instructor': slot.lesson.instructor.get_full_name(),
+                'category': slot.lesson.category,
+                'location': slot.lesson.location
             })
         
         # Kategorie pro ouška (z definice v modelu)
@@ -135,6 +139,16 @@ class BookingCreateView(LoginRequiredMixin, CreateView):
     template_name = 'bookings/booking_create.html'
     success_url = reverse_lazy('accounts:client_dashboard')
 
+    def get_form(self, form_class=None):
+        """Předvyplníme instance formu hodnotami, které nejsou ve formuláři,
+        aby prošla modelová validace (clean), která time_slot vyžaduje."""
+        form = super().get_form(form_class)
+        time_slot_id = self.kwargs.get('time_slot_id')
+        if time_slot_id:
+            form.instance.time_slot = get_object_or_404(TimeSlot, id=time_slot_id)
+        form.instance.client = self.request.user
+        return form
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         time_slot_id = self.kwargs.get('time_slot_id')
@@ -158,3 +172,19 @@ class BookingCreateView(LoginRequiredMixin, CreateView):
         form.instance.status = 'confirmed'
     
         return super().form_valid(form)
+
+class BookingCancelView(LoginRequiredMixin, View):
+    def post(self, request, booking_id):
+        booking = get_object_or_404(Booking, id=booking_id, client=request.user)
+        
+        if not booking.can_cancel():
+            messages.error(request, "Rezervaci nelze zrušit méně než 2 hodiny před začátkem lekce nebo je již zrušená.")
+            return redirect('accounts:client_dashboard')
+        
+        try:
+            booking.cancel()
+            messages.success(request, f"Rezervace byla úspěšně zrušena. Kredit {booking.time_slot.lesson.price} Kč byl vrácen na váš účet.")
+        except Exception as e:
+            messages.error(request, f"Chyba při rušení rezervace: {str(e)}")
+        
+        return redirect('accounts:client_dashboard')

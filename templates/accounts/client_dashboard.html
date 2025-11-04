@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="login-wrapper">
+  <div class="login-container dashboard-container" style="max-width: 100%; width: 100%; flex: 3;">
+    <div class="login-header">
+      <h2>Klient – přehled</h2>
+      <p>Vítejte, {{ request.user.get_full_name|default:request.user.username }}. Zde najdete své rezervace a kredit.</p>
+    </div>
+
+    <!-- Horní řádek akcí -->
+    <div class="dashboard-actions">
+      <a class="action-card" href="{% url 'payment_history' %}">
+        <span class="action-title">Historie plateb</span>
+        <span class="action-sub">Přehled dobití a potvrzení</span>
+      </a>
+      <a class="action-card" href="{% url 'accounts:profile' %}">
+        <span class="action-title">Nastavení profilu</span>
+        <span class="action-sub">Údaje, heslo a dobití kreditu</span>
+      </a>
+    </div>
+
+    <div class="lesson-card" style="margin-bottom: 20px;">
+      <div class="lesson-title">Můj kredit</div>
+      <div class="lesson-info">Zůstatek: <strong>{{ request.user.credits }} Kč</strong></div>
+      <p class="lesson-info" style="margin-top:10px; color:#666;">Dobití kreditu najdete v nastavení profilu.</p>
+    </div>
+
+    <div class="lesson-card">
+      <div class="lesson-title">Moje rezervace</div>
+      <div class="lesson-info">Přehled vašich posledních rezervací.</div>
+      {% with bookings=request.user.client_bookings.all %}
+        {% if bookings %}
+          <div>
+            <table class="table table-striped" style="width:100%; margin-top:10px;">
+              <thead>
+                <tr>
+                  <th>Lekce</th>
+                  <th>Datum a čas</th>
+                  <th>Místo</th>
+                  <th>Stav</th>
+                  <th>Zrušení</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for b in bookings|slice:':10' %}
+                  <tr>
+                    <td>
+                      <a href="{% url 'lesson_detail' b.time_slot.lesson.id %}" style="text-decoration:underline; color:#4682b4;">{{ b.time_slot.lesson.title }}</a>
+                    </td>
+                    <td>{{ b.time_slot.start_time|date:'d.m.Y H:i' }}</td>
+                    <td>{{ b.time_slot.lesson.location }}</td>
+                    <td><span style="color:#666;">{{ b.get_status_display }}</span></td>
+                    <td>
+                      {% if b.status != 'cancelled' %}
+                        {% if b.can_cancel %}
+                          <span style="color:#28a745; font-size:12px;">lze zrušit do {{ b.cancellation_deadline|date:'d.m. H:i' }}</span><br>
+                          <form method="post" action="{% url 'booking_cancel' b.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn" style="padding:4px 10px; font-size:13px; background:#dc3545; margin-top:2px;" onclick="return confirm('Opravdu chcete zrušit tuto rezervaci?')">Zrušit</button>
+                          </form>
+                        {% else %}
+                          <span style="color:#999; font-size:12px;">nelze již zrušit</span><br>
+                          <button disabled class="btn" style="padding:4px 10px; font-size:13px; background:#999; cursor:not-allowed; opacity:0.6; margin-top:2px;">Nelze zrušit</button>
+                        {% endif %}
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p style="margin-top:10px; color:#666;">Zatím nemáte žádné rezervace.</p>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+</div>
+{% endblock %}

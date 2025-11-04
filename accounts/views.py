@@ -25,6 +25,12 @@ class ProfileView(LoginRequiredMixin, UpdateView):
 	def get_object(self):
 		return self.request.user
 
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		# Defaultní instruktor pro dobití kreditu (první nalezený)
+		context['default_instructor'] = User.objects.filter(user_type='instructor').first()
+		return context
+
 class InstructorDashboardView(LoginRequiredMixin, TemplateView):
 	template_name = 'accounts/instructor_dashboard.html'
     

@@ -24,3 +24,11 @@ class User(AbstractUser):
     def add_credits(self, amount):
         self.credits += amount
         self.save()
+
+    @property
+    def is_instructor(self) -> bool:
+        return self.user_type == 'instructor'
+
+    @property
+    def is_client(self) -> bool:
+        return self.user_type == 'client'

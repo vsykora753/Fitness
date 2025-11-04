@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from decimal import Decimal
+from datetime import timedelta
 
 from django.utils import timezone
 
@@ -94,6 +95,44 @@ class Booking(models.Model):
     
     def __str__(self):
         return f"{self.client.get_full_name()} - {self.time_slot}"
+    
+    def can_cancel(self):
+        """Kontrola, zda lze rezervaci zrušit (minimálně 2 hodiny před začátkem)"""
+        if self.status == 'cancelled':
+            return False
+        now = timezone.now()
+        time_before_lesson = self.time_slot.start_time - now
+        return time_before_lesson >= timedelta(hours=2)
+    
+    def cancellation_deadline(self):
+        """Vrací čas, do kdy je možné rezervaci zrušit (2 hodiny před začátkem lekce)"""
+        return self.time_slot.start_time - timedelta(hours=2)
+    
+    def cancel(self):
+        """Zruší rezervaci a vrátí kredit klientovi"""
+        if not self.can_cancel():
+            raise ValidationError("Rezervaci nelze zrušit méně než 2 hodiny před začátkem lekce")
+        
+        # Vrátit kredit klientovi
+        try:
+            client_credits = Decimal(str(self.client.credits))
+        except Exception:
+            client_credits = Decimal(0)
+        try:
+            price = Decimal(str(self.time_slot.lesson.price))
+        except Exception:
+            price = Decimal(0)
+        
+        self.client.credits = client_credits + price
+        self.client.save()
+        
+        # Uvolnit termín
+        self.time_slot.is_available = True
+        self.time_slot.save()
+        
+        # Změnit stav rezervace
+        self.status = 'cancelled'
+        self.save()
     
     class Meta:
         ordering = ['-created_at']

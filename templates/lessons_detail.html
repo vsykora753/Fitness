@@ -12,6 +12,12 @@
         
         <div class="lesson-meta">
             <div class="meta-item">
+                <strong>Lektor:</strong> {{ lesson.instructor.get_full_name }}
+            </div>
+            <div class="meta-item">
+                <strong>Místo:</strong> {{ lesson.location }}
+            </div>
+            <div class="meta-item">
                 <strong>Délka lekce:</strong> {{ lesson.duration }} minut
             </div>
             <div class="meta-item">
@@ -22,17 +28,31 @@
             </div>
         </div>
 
-        <div class="instructor-info">
-            <h3>Lektor</h3>
-            <p>{{ lesson.instructor.get_full_name }}</p>
-        </div>
-    </div>
-    
-        {% if user.is_authenticated and not user.is_instructor %}
-        <!-- Tlačítko pro rezervaci lekce -->
-        <a href="{% url 'booking_create' lesson.id %}" class="btn">Rezervovat</a>
+        <h3>Dostupné termíny</h3>
+        {% if time_slots %}
+            <div class="time-slots-list">
+                {% for slot in time_slots %}
+                    <div class="time-slot-item">
+                        <div class="slot-info">
+                            <strong>{{ slot.start_time|date:'d.m.Y H:i' }}</strong>
+                            {% if slot.is_available %}
+                                <span class="badge-available">Dostupné</span>
+                            {% else %}
+                                <span class="badge-full">Obsazeno</span>
+                            {% endif %}
+                        </div>
+                        {% if user.is_authenticated and not user.is_instructor and slot.is_available %}
+                            <a href="{% url 'booking_create' slot.id %}" class="btn">Rezervovat tento termín</a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-        <p>Pro rezervaci se prosím přihlašte.</p>
+            <p>Pro tuto lekci nejsou momentálně dostupné žádné termíny.</p>
+        {% endif %}
+        
+        {% if not user.is_authenticated %}
+            <p style="margin-top: 20px;">Pro rezervaci se prosím <a href="{% url 'accounts:login' %}">přihlašte</a>.</p>
         {% endif %}
     </div>
     

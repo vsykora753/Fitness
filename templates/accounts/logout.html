@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="login-wrapper">
+  <div class="login-container">
+    <div class="login-header">
+      <h2>Odhlášení</h2>
+      <p>Byli jste úspěšně odhlášeni.</p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 20px;">
+      <a class="btn-login" href="{% url 'lessons' %}" style="display: inline-block; text-decoration: none;">Přejít na kalendář lekcí</a>
+    </div>
+    
+    <div class="login-footer">
+      <p>Chcete se znovu přihlásit? <a href="{% url 'accounts:login' %}">Přihlaste se zde</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

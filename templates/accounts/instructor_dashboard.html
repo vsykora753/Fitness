@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="login-wrapper">
+  <div class="login-container dashboard-container">
+    <div class="login-header">
+      <h2>Lektor – přehled</h2>
+      <p>Vítejte, {{ request.user.get_full_name|default:request.user.username }}. Zde najdete své lekce a čekající platby.</p>
+    </div>
+
+    <div class="lesson-card" style="margin-bottom: 20px;">
+      <div class="lesson-title">Moje lekce</div>
+      {% with lessons=request.user.instructor_lessons.all %}
+        {% if lessons %}
+          <ul style="margin-top: 10px;">
+            {% for l in lessons|slice:':10' %}
+              <li style="margin:6px 0;">{{ l.title }} – {{ l.date|date:'d.m.Y' }} {{ l.start_time }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p style="margin-top:10px; color:#666;">Zatím nemáte vytvořené žádné lekce.</p>
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <div class="lesson-card">
+      <div class="lesson-title">Čekající platby ke schválení</div>
+      {% with payments=request.user.payments_received.filter(status='pending') %}
+        {% if payments %}
+          <ul style="margin-top: 10px;">
+            {% for p in payments %}
+              <li style="margin:6px 0;">
+                {{ p.client.get_full_name|default:p.client.username }} – {{ p.amount }} Kč, {{ p.created_at|date:'d.m.Y H:i' }}
+                <a class="btn" style="margin-left:8px; padding:6px 10px;" href="{% url 'payment_confirm' p.id %}">Potvrdit</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p style="margin-top:10px; color:#666;">Žádné čekající platby.</p>
+        {% endif %}
+      {% endwith %}
+      <div style="margin-top:12px;"><a class="btn" href="{% url 'payment_history' %}">Historie plateb</a></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
