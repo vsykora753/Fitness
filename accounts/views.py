@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView, TemplateView
 from django.urls import reverse_lazy
 from .forms import UserRegisterForm
+from payments.models import TopUp
 
 User = get_user_model()
 
@@ -38,6 +39,7 @@ class InstructorDashboardView(LoginRequiredMixin, TemplateView):
 		context = super().get_context_data(**kwargs)
 		if self.request.user.user_type != 'instructor':
 			return redirect('home')
+		context['pending_topups'] = TopUp.objects.filter(status='pending')[:10]
 		return context
 
 class ClientDashboardView(LoginRequiredMixin, TemplateView):

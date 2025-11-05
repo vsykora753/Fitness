@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load form_extras %}
+
+{% block content %}
+<div class="container">
+  <h2>Dobití kreditu</h2>
+  <div class="card">
+    <div class="card-body">
+      <p class="text-muted">Zadejte částku, kterou chcete dobít. Po odeslání se zobrazí QR kód pro platbu bankovním převodem (QR Platba).</p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          {{ form.amount.label_tag }}
+          {{ form.amount.errors }}
+          {{ form.amount|add_class:"form-control" }}
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Vygenerovat QR platbu</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

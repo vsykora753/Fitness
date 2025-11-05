@@ -15,6 +15,10 @@
         <span class="action-title">Historie plateb</span>
         <span class="action-sub">Přehled dobití a potvrzení</span>
       </a>
+      <a class="action-card" href="{% url 'topup_create' %}">
+        <span class="action-title">Dobít kredit</span>
+        <span class="action-sub">QR platba s VS a zprávou</span>
+      </a>
       <a class="action-card" href="{% url 'accounts:profile' %}">
         <span class="action-title">Nastavení profilu</span>
         <span class="action-sub">Údaje, heslo a dobití kreditu</span>
@@ -24,7 +28,10 @@
     <div class="lesson-card" style="margin-bottom: 20px;">
       <div class="lesson-title">Můj kredit</div>
       <div class="lesson-info">Zůstatek: <strong>{{ request.user.credits }} Kč</strong></div>
-      <p class="lesson-info" style="margin-top:10px; color:#666;">Dobití kreditu najdete v nastavení profilu.</p>
+      <div style="margin-top:10px;">
+        <a class="btn" href="{% url 'topup_create' %}" style="background:#28a745; color:white;">Dobít kredit</a>
+        <a class="btn" href="{% url 'topup_history' %}" style="background:#6c757d; color:white;">Historie dobití</a>
+      </div>
     </div>
 
     <div class="lesson-card">

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <h2>Historie dobití</h2>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Datum</th>
+          <th>Částka</th>
+          <th>Variabilní symbol</th>
+          <th>Stav</th>
+          <th>Akce</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in topups %}
+          <tr>
+            <td>{{ t.created_at|date:"d.m.Y H:i" }}</td>
+            <td>{{ t.amount }} Kč</td>
+            <td>{{ t.variable_symbol }}</td>
+            <td>
+              {% if t.status == 'pending' %}
+                <span class="badge bg-warning">Čeká na platbu</span>
+              {% elif t.status == 'confirmed' %}
+                <span class="badge bg-success">Připsáno</span>
+              {% else %}
+                <span class="badge bg-danger">Zrušeno</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'topup_detail' t.pk %}" class="btn btn-sm btn-primary">Detail / QR</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">Žádná dobití k zobrazení</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <a href="{% url 'topup_create' %}" class="btn btn-success">Nové dobití</a>
+</div>
+{% endblock %}

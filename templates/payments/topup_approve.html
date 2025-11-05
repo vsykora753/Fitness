@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <h2>Potvrzení dobití</h2>
+  <div class="card">
+    <div class="card-body">
+      <p><strong>Klient:</strong> {{ object.user.get_full_name|default:object.user.username }}</p>
+      <p><strong>Částka:</strong> {{ object.amount }} Kč</p>
+      <p><strong>Variabilní symbol:</strong> {{ object.variable_symbol }}</p>
+      <p><strong>Zpráva:</strong> {{ object.message }}</p>
+      <p><strong>Vytvořeno:</strong> {{ object.created_at|date:"d.m.Y H:i" }}</p>
+
+      {% if object.qr_code %}
+        <div class="text-center mb-3">
+          <img src="{{ object.qr_code.url }}" alt="QR kód" class="img-fluid" style="max-width:320px;">
+        </div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Potvrdit a připsat kredit</button>
+        <a href="{% url 'topup_approve_list' %}" class="btn btn-secondary">Zpět</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -17,19 +17,6 @@
       {% endif %}
     </div>
 
-    <div class="lesson-card" style="margin-bottom: 20px;">
-      <div class="lesson-title">Můj kredit</div>
-      <div class="lesson-info" style="font-size: 18px;">Aktuální zůstatek: <strong>{{ request.user.credits }} Kč</strong></div>
-      <div style="margin-top: 12px; display:flex; gap:10px; flex-wrap:wrap;">
-        {% if default_instructor %}
-          <a class="btn" href="{% url 'payment_create' default_instructor.id %}">Dobít kredit</a>
-        {% else %}
-          <span style="color:#666;">Není dostupný žádný instruktor pro platbu.</span>
-        {% endif %}
-        <a class="btn" href="{% url 'payment_history' %}">Historie plateb</a>
-      </div>
-    </div>
-
     <form method="post" class="login-form">
       {% csrf_token %}
       <div class="form-row">

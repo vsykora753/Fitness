@@ -71,6 +71,10 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            # Registrace vlastních template tag knihoven (pro jistotu načítání)
+            "libraries": {
+                "form_extras": "payments.templatetags.form_extras",
+            },
         },
     },
 ]
@@ -140,3 +144,7 @@ LOGOUT_REDIRECT_URL = "/lekce/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Platby – IBAN příjemce pro QR Platby (nutné nastavit v produkci)
+# Příklad: 'CZ5855000000001234567899'
+PAYMENT_BANK_IBAN = ""
