@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView, TemplateView
 from django.urls import reverse_lazy
 from .forms import UserRegisterForm, AboutPageForm
-from payments.models import TopUp, Payment
+from payments.models import TopUp
 from .models import AboutPage
 
 User = get_user_model()
@@ -43,15 +43,6 @@ class InstructorDashboardView(LoginRequiredMixin, TemplateView):
 		context = super().get_context_data(**kwargs)
 		# Čekající dobití (globálně pro všechny klienty) - zobrazíme všechna
 		context['pending_topups'] = TopUp.objects.filter(status='pending').select_related('user').order_by('created_at')
-		# Čekající platby směřované na přihlášeného lektora
-		context['pending_payments'] = (
-			Payment.objects
-			.filter(instructor=self.request.user, status='pending')
-			.select_related('client')
-			.order_by('-created_at')[:10]
-		)
-		# Volitelně: posledních pár lekcí lektora (pro rychlý přehled)
-		context['recent_lessons'] = self.request.user.instructor_lessons.all()[:5]
 		return context
 
 class ClientDashboardView(LoginRequiredMixin, TemplateView):

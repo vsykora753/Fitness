@@ -184,7 +184,11 @@ class BookingCancelView(LoginRequiredMixin, View):
 
 
 class InstructorLessonListView(InstructorRequiredMixin, ListView):
-    """Seznam všech lekcí daného lektora."""
+    """
+    DEPRECATED: Seznam lekcí je nyní přímo v dashboardu.
+    URL /bookings/instructor/lessons/ přesměrovává na dashboard.
+    Ponecháno pro případnou budoucí potřebu.
+    """
     model = Lesson
     template_name = 'bookings/instructor_lesson_list.html'
     context_object_name = 'lessons'
@@ -198,7 +202,7 @@ class LessonCreateView(InstructorRequiredMixin, CreateView):
     model = Lesson
     template_name = 'bookings/lesson_form.html'
     fields = ['title', 'description', 'category', 'price', 'duration', 'capacity', 'date', 'start_time', 'location']
-    success_url = reverse_lazy('bookings:instructor_lessons')
+    success_url = reverse_lazy('accounts:instructor_dashboard')
     
     def form_valid(self, form):
         # Uložíme lekci pod přihlášeného lektora
@@ -230,7 +234,7 @@ class LessonUpdateView(InstructorRequiredMixin, UpdateView):
     model = Lesson
     template_name = 'bookings/lesson_form.html'
     fields = ['title', 'description', 'category', 'price', 'duration', 'capacity', 'date', 'start_time', 'location']
-    success_url = reverse_lazy('bookings:instructor_lessons')
+    success_url = reverse_lazy('accounts:instructor_dashboard')
     
     def get_queryset(self):
         # Lektor může editovat pouze své vlastní lekce
@@ -263,7 +267,7 @@ class LessonDeleteView(InstructorRequiredMixin, DeleteView):
     """Smazání lekce lektorem."""
     model = Lesson
     template_name = 'bookings/lesson_confirm_delete.html'
-    success_url = reverse_lazy('bookings:instructor_lessons')
+    success_url = reverse_lazy('accounts:instructor_dashboard')
     
     def get_queryset(self):
         # Lektor může mazat pouze své vlastní lekce

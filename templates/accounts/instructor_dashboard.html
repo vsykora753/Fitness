@@ -385,34 +385,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Čekající platby ke schválení -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> Čekající platby ke schválení</h3>
-            </div>
-            <div class="card-body">
-                {% if pending_payments %}
-                    <ul class="lesson-list">
-                        {% for p in pending_payments %}
-                            <li>
-                                {{ p.client.get_full_name|default:p.client.username }} – <strong>{{ p.amount }} Kč</strong>, {{ p.created_at|date:'d.m.Y H:i' }}
-                                <a class="btn btn-success btn-sm" style="margin-left:8px;" href="{% url 'payment_confirm' p.id %}">
-                                    <i class="fas fa-check"></i> Potvrdit
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="empty-state">Žádné čekající platby.</p>
-                {% endif %}
-                <div class="btn-group">
-                    <a class="btn" href="{% url 'payment_history' %}">
-                        <i class="fas fa-history"></i> Historie plateb
-                    </a>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Čekající dobití kreditu - PLNÁ TABULKA -->

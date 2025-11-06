@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 from . import views
 
 app_name = 'bookings'
@@ -15,7 +16,8 @@ urlpatterns = [
     path('cancel/<int:booking_id>/', views.BookingCancelView.as_view(), name='booking_cancel'),
     
     # Instruktoři - správa lekcí
-    path('instructor/lessons/', views.InstructorLessonListView.as_view(), name='instructor_lessons'),
+    # Přesměrování na dashboard - lekce jsou nyní přímo tam
+    path('instructor/lessons/', RedirectView.as_view(pattern_name='accounts:instructor_dashboard', permanent=True), name='instructor_lessons'),
     path('instructor/lesson/create/', views.LessonCreateView.as_view(), name='lesson_create'),
     path('instructor/lesson/<int:pk>/edit/', views.LessonUpdateView.as_view(), name='lesson_edit'),
     path('instructor/lesson/<int:pk>/delete/', views.LessonDeleteView.as_view(), name='lesson_delete'),
