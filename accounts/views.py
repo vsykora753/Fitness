@@ -44,8 +44,8 @@ class InstructorDashboardView(LoginRequiredMixin, TemplateView):
     
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		# Čekající dobití (globálně pro všechny klienty)
-		context['pending_topups'] = TopUp.objects.filter(status='pending')[:10]
+		# Čekající dobití (globálně pro všechny klienty) - zobrazíme všechna
+		context['pending_topups'] = TopUp.objects.filter(status='pending').select_related('user').order_by('created_at')
 		# Čekající platby směřované na přihlášeného lektora
 		context['pending_payments'] = (
 			Payment.objects

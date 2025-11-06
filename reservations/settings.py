@@ -147,4 +147,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Platby – IBAN příjemce pro QR Platby (nutné nastavit v produkci)
 # Příklad: 'CZ5855000000001234567899'
-PAYMENT_BANK_IBAN = ""
+PAYMENT_BANK_IBAN = "CZ9727000000002102477220"

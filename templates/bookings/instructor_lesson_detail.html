@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load booking_extras %}
 
 {% block title %}Detail lekce: {{ lesson.title }}{% endblock %}
 
@@ -325,6 +326,35 @@
         box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
     }
     
+    .credit-amount {
+        font-weight: 700;
+        font-size: 1rem;
+    }
+    
+    .credit-sufficient {
+        color: #28a745;
+    }
+    
+    .credit-low {
+        color: #ffc107;
+    }
+    
+    .credit-insufficient {
+        color: #dc3545;
+    }
+    
+    .pending-topup-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .pending-count {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
     @media (max-width: 768px) {
         .detail-header {
             padding: 1rem;
@@ -367,9 +397,14 @@
     </div>
     
     <div class="detail-content">
-
-    
-    <div class="detail-content">
+        <!-- Alert pro čekající platby -->
+        {% if total_pending_topups and total_pending_topups > 0 %}
+        <div class="alert-custom" style="background-color: #fff3cd; border-left-color: #ffc107; color: #856404; margin-bottom: 1.5rem;">
+            <i class="fas fa-exclamation-triangle"></i> 
+            <strong>Čekající dobití:</strong> Celkem {{ total_pending_topups|floatformat:0 }} Kč čeká na potvrzení od přihlášených klientů.
+        </div>
+        {% endif %}
+        
         <!-- Základní informace -->
         <div class="info-grid">
             <div class="info-card">
@@ -462,6 +497,11 @@
                 <div class="stat-number">{{ total_bookings }}</div>
                 <div class="stat-label">Aktivních rezervací</div>
             </div>
+            
+            <div class="stat-box">
+                <div class="stat-number">{{ client_info|length }}</div>
+                <div class="stat-label">Přihlášených klientů</div>
+            </div>
         </div>
         
         <!-- Časové sloty -->
@@ -527,6 +567,8 @@
                         <th>Telefon</th>
                         <th>Termín</th>
                         <th>Status</th>
+                        <th>Kredit</th>
+                        <th>Čekající dobití</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -544,6 +586,31 @@
                             {% else %}
                             <span class="badge badge-warning">{{ booking.get_status_display }}</span>
                             {% endif %}
+                        </td>
+                        <td>
+                            {% with info=client_info|get_item:booking.client.id %}
+                                {% if info %}
+                                    <span class="credit-amount {% if info.credits >= lesson.price %}credit-sufficient{% elif info.credits > 0 %}credit-low{% else %}credit-insufficient{% endif %}">
+                                        {{ info.credits|floatformat:0 }} Kč
+                                    </span>
+                                {% else %}
+                                    <span style="color: #6c757d;">—</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% with info=client_info|get_item:booking.client.id %}
+                                {% if info and info.pending_topups %}
+                                    <div class="pending-topup-info">
+                                        <span class="badge badge-warning" title="Čeká na potvrzení: {{ info.pending_topups.count }} dobití">
+                                            +{{ info.pending_total|floatformat:0 }} Kč
+                                        </span>
+                                        <span class="pending-count">({{ info.pending_topups.count }}x)</span>
+                                    </div>
+                                {% else %}
+                                    <span style="color: #6c757d;">—</span>
+                                {% endif %}
+                            {% endwith %}
                         </td>
                     </tr>
                     {% endfor %}

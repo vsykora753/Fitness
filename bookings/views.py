@@ -311,6 +311,34 @@ class InstructorLessonDetailView(InstructorRequiredMixin, DetailView):
         context['total_bookings'] = bookings.count()
         context['total_slots'] = time_slots.count()
         
+        # Informace o kreditech klientů
+        from payments.models import TopUp
+        clients = set(booking.client for booking in bookings)
+        client_info = {}
+        total_pending_amount = 0
+        for client in clients:
+            # Kredit klienta
+            credit_balance = getattr(client, 'credits', 0)
+            
+            # Čekající dobití
+            pending_topups = TopUp.objects.filter(
+                user=client,
+                status='pending'
+            ).order_by('-created_at')
+            
+            pending_sum = sum(topup.amount for topup in pending_topups)
+            total_pending_amount += pending_sum
+            
+            client_info[client.id] = {
+                'client': client,
+                'credits': credit_balance,
+                'pending_topups': pending_topups,
+                'pending_total': pending_sum
+            }
+        
+        context['client_info'] = client_info
+        context['total_pending_topups'] = total_pending_amount
+        
         return context
 
 

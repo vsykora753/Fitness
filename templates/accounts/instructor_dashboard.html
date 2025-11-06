@@ -2,74 +2,345 @@
 {% load static %}
 
 {% block content %}
-<div class="login-wrapper">
-  <div class="login-container dashboard-container">
-    <div class="login-header">
-      <h2>Lektor – přehled</h2>
-      <p>Vítejte, {{ request.user.get_full_name|default:request.user.username }}. Zde najdete své lekce a čekající platby.</p>
+<style>
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .dashboard-header {
+        background: linear-gradient(135deg, #4682b4 0%, #365f8d 100%);
+        color: white;
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(70, 130, 180, 0.2);
+    }
+    
+    .dashboard-header h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+    
+    .dashboard-header p {
+        margin: 0;
+        opacity: 0.9;
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 2px solid #4682b4;
+        padding: 1rem 1.5rem;
+    }
+    
+    .card-title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #4682b4;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card-title i {
+        margin-right: 0.5rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .lesson-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1rem 0;
+    }
+    
+    .lesson-list li {
+        padding: 0.6rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .lesson-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        background: linear-gradient(135deg, #4682b4 0%, #365f8d 100%);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(70, 130, 180, 0.3);
+        color: white;
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #28a745 0%, #20833a 100%);
+    }
+    
+    .btn-success:hover {
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+    
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    
+    .empty-state {
+        color: #6c757d;
+        font-style: italic;
+        padding: 1rem 0;
+    }
+    
+    .topup-full-section {
+        grid-column: 1 / -1;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        margin: 1rem 0;
+    }
+    
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+    
+    .modern-table thead {
+        background: linear-gradient(135deg, #4682b4 0%, #365f8d 100%);
+        color: white;
+    }
+    
+    .modern-table thead th {
+        padding: 0.8rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .modern-table tbody tr {
+        border-bottom: 1px solid #e0e0e0;
+        transition: background-color 0.2s ease;
+    }
+    
+    .modern-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .modern-table tbody td {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
+    
+    .credit-display {
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+    
+    .credit-zero {
+        color: #dc3545;
+    }
+    
+    .credit-low {
+        color: #ffc107;
+    }
+    
+    .credit-ok {
+        color: #28a745;
+    }
+    
+    .credit-after {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 0.2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .modern-table {
+            font-size: 0.8rem;
+        }
+        
+        .modern-table thead th,
+        .modern-table tbody td {
+            padding: 0.5rem;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2><i class="fas fa-tachometer-alt"></i> Lektor – Dashboard</h2>
+        <p>Vítejte, {{ request.user.get_full_name|default:request.user.username }}. Zde najdete přehled vašich lekcí a čekajících plateb.</p>
     </div>
 
-    <div class="lesson-card" style="margin-bottom: 20px;">
-      <div class="lesson-title">Moje lekce</div>
-      {% with lessons=request.user.instructor_lessons.all %}
-        {% if lessons %}
-          <ul style="margin-top: 10px;">
-            {% for l in lessons|slice:':5' %}
-              <li style="margin:6px 0;">{{ l.title }} – {{ l.date|date:'d.m.Y' }} {{ l.start_time }}</li>
-            {% endfor %}
-          </ul>
-          {% if lessons.count > 5 %}
-            <p style="margin-top:8px; color:#666; font-size:0.9em;">... a dalších {{ lessons.count|add:"-5" }} lekcí</p>
-          {% endif %}
-        {% else %}
-          <p style="margin-top:10px; color:#666;">Zatím nemáte vytvořené žádné lekce.</p>
-        {% endif %}
-      {% endwith %}
-      <div style="margin-top:12px;">
-        <a class="btn" href="{% url 'bookings:instructor_lessons' %}">
-          <i class="fas fa-list"></i> Správa lekcí
-        </a>
-        <a class="btn" style="margin-left:8px; background-color:#28a745; border-color:#28a745;" href="{% url 'bookings:lesson_create' %}">
-          <i class="fas fa-plus"></i> Nová lekce
-        </a>
-      </div>
+    <div class="dashboard-grid">
+        <!-- Moje lekce -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-dumbbell"></i> Moje lekce</h3>
+            </div>
+            <div class="card-body">
+                {% with lessons=request.user.instructor_lessons.all %}
+                    {% if lessons %}
+                        <ul class="lesson-list">
+                            {% for l in lessons|slice:':5' %}
+                                <li>{{ l.title }} – {{ l.date|date:'d.m.Y' }} {{ l.start_time }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if lessons.count > 5 %}
+                            <p class="empty-state">... a dalších {{ lessons.count|add:"-5" }} lekcí</p>
+                        {% endif %}
+                    {% else %}
+                        <p class="empty-state">Zatím nemáte vytvořené žádné lekce.</p>
+                    {% endif %}
+                {% endwith %}
+                <div class="btn-group">
+                    <a class="btn" href="{% url 'bookings:instructor_lessons' %}">
+                        <i class="fas fa-list"></i> Správa lekcí
+                    </a>
+                    <a class="btn btn-success" href="{% url 'bookings:lesson_create' %}">
+                        <i class="fas fa-plus"></i> Nová lekce
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Čekající platby ke schválení -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> Čekající platby ke schválení</h3>
+            </div>
+            <div class="card-body">
+                {% if pending_payments %}
+                    <ul class="lesson-list">
+                        {% for p in pending_payments %}
+                            <li>
+                                {{ p.client.get_full_name|default:p.client.username }} – <strong>{{ p.amount }} Kč</strong>, {{ p.created_at|date:'d.m.Y H:i' }}
+                                <a class="btn btn-success btn-sm" style="margin-left:8px;" href="{% url 'payment_confirm' p.id %}">
+                                    <i class="fas fa-check"></i> Potvrdit
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty-state">Žádné čekající platby.</p>
+                {% endif %}
+                <div class="btn-group">
+                    <a class="btn" href="{% url 'payment_history' %}">
+                        <i class="fas fa-history"></i> Historie plateb
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="lesson-card">
-      <div class="lesson-title">Čekající platby ke schválení</div>
-      {% if pending_payments %}
-        <ul style="margin-top: 10px;">
-          {% for p in pending_payments %}
-            <li style="margin:6px 0;">
-              {{ p.client.get_full_name|default:p.client.username }} – {{ p.amount }} Kč, {{ p.created_at|date:'d.m.Y H:i' }}
-              <a class="btn" style="margin-left:8px; padding:6px 10px;" href="{% url 'payment_confirm' p.id %}">Potvrdit</a>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p style="margin-top:10px; color:#666;">Žádné čekající platby.</p>
-      {% endif %}
-      <div style="margin-top:12px;"><a class="btn" href="{% url 'payment_history' %}">Historie plateb</a></div>
+    <!-- Čekající dobití kreditu - PLNÁ TABULKA -->
+    <div class="card topup-full-section">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-cash-register"></i> Čekající dobití kreditu ke schválení</h3>
+        </div>
+        <div class="card-body">
+            {% with topups=pending_topups %}
+                {% if topups %}
+                    <div class="table-container">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Datum</th>
+                                    <th>Klient</th>
+                                    <th>Částka dobití</th>
+                                    <th>Aktuální kredit</th>
+                                    <th>Kredit po připsání</th>
+                                    <th>VS</th>
+                                    <th>Zpráva</th>
+                                    <th>Akce</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in topups %}
+                                <tr>
+                                    <td>{{ t.created_at|date:"d.m.Y H:i" }}</td>
+                                    <td><strong>{{ t.user.get_full_name|default:t.user.username }}</strong></td>
+                                    <td><strong style="color: #4682b4;">+{{ t.amount|floatformat:0 }} Kč</strong></td>
+                                    <td>
+                                        <div class="credit-display {% if t.user.credits == 0 %}credit-zero{% elif t.user.credits < 500 %}credit-low{% else %}credit-ok{% endif %}">
+                                            {{ t.user.credits|floatformat:0 }} Kč
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="credit-display credit-ok">
+                                            {{ t.user.credits|add:t.amount|floatformat:0 }} Kč
+                                        </div>
+                                        <div class="credit-after">
+                                            <i class="fas fa-arrow-up"></i> +{{ t.amount|floatformat:0 }} Kč
+                                        </div>
+                                    </td>
+                                    <td>{{ t.variable_symbol }}</td>
+                                    <td>{{ t.message|truncatewords:4 }}</td>
+                                    <td>
+                                        <a href="{% url 'topup_approve' t.id %}" class="btn btn-success btn-sm">
+                                            <i class="fas fa-check"></i> Potvrdit
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="empty-state" style="text-align: center; padding: 2rem;">
+                        <i class="fas fa-inbox" style="font-size: 2rem; color: #4682b4; display: block; margin-bottom: 0.5rem;"></i>
+                        Žádná čekající dobití.
+                    </p>
+                {% endif %}
+            {% endwith %}
+        </div>
     </div>
-
-    <div class="lesson-card" style="margin-top: 20px;">
-      <div class="lesson-title">Čekající dobití kreditu</div>
-      {% with topups=pending_topups %}
-        {% if topups %}
-          <ul style="margin-top: 10px;">
-            {% for t in topups|slice:':10' %}
-              <li style="margin:6px 0;">
-                {{ t.user.get_full_name|default:t.user.username }} – {{ t.amount }} Kč, VS {{ t.variable_symbol }}
-                <a class="btn" style="margin-left:8px; padding:6px 10px;" href="{% url 'topup_approve' t.id %}">Potvrdit</a>
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p style="margin-top:10px; color:#666;">Žádná čekající dobití.</p>
-        {% endif %}
-      {% endwith %}
-      <div style="margin-top:12px;"><a class="btn" href="{% url 'topup_approve_list' %}">Zobrazit vše</a></div>
-    </div>
-  </div>
 </div>
 {% endblock %}
