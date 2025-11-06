@@ -32,6 +32,12 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'accounts.User'
 
+# Authentication backends - umožňuje přihlášení emailem
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.EmailBackend',  # Náš vlastní backend pro email
+    'django.contrib.auth.backends.ModelBackend',  # Fallback na původní backend
+]
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",

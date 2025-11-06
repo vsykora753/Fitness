@@ -589,6 +589,14 @@ nav a:hover {
   box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.1);
 }
 
+.form-text.text-muted {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #6c757d;
+  font-style: italic;
+}
+
 .form-errors {
   margin-top: 8px;
 }
@@ -917,4 +925,95 @@ nav a:hover {
   .lesson-card {
     margin-bottom: 5px; /* menší mezera mezi kartami */
   }
+}
+
+/* About page */
+.about-hero {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  background: linear-gradient(135deg, rgba(70,130,180,0.95), rgba(70,130,180,0.65)), url('../img/hero-fitness.jpg') center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.about-hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(800px 400px at top right, rgba(255,255,255,0.08), transparent),
+              radial-gradient(600px 300px at bottom left, rgba(255,255,255,0.06), transparent);
+  pointer-events: none;
+}
+
+.about-hero-shape {
+  position: absolute;
+  width: 1200px;
+  height: 1200px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 40% 60% 50% 50% / 40% 40% 60% 60% ;
+  filter: blur(30px);
+  transform: rotate(15deg);
+  top: -600px;
+  right: -400px;
+}
+
+.about-hero-overlay { /* jemný lesk nahoře */
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 10px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+}
+
+.about-hero-inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: #fff;
+  padding: 60px 20px;
+}
+
+.about-hero h1 {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.2);
+}
+
+.about-hero p {
+  margin-top: 12px;
+  font-size: 18px;
+  opacity: 0.95;
+}
+
+.about-section {
+  padding: 30px 18px 60px;
+  background: #f7f9fc;
+}
+
+.about-content.card {
+  max-width: 960px;
+  margin: -40px auto 0; /* lehké překrytí přes hero */
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 28px;
+}
+
+.about-text p {
+  margin-bottom: 16px;
+  font-size: 17px;
+  color: #333;
+}
+
+.about-text strong {
+  color: #4682b4;
+}
+
+@media (max-width: 768px) {
+  .about-hero { min-height: 260px; }
+  .about-hero h1 { font-size: 28px; }
+  .about-hero p { font-size: 16px; }
+  .about-content.card { margin-top: -28px; padding: 20px; }
 }

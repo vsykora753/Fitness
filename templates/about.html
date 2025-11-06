@@ -4,63 +4,31 @@
 {% block title %}O mě | Fitness Rezervace{% endblock %}
 
 {% block content %}
-<div class="about-section">
-    <div class="about-content">
-        {% if about %}
-            <h1>{{ about.title }}</h1>
-            <div class="about-text">
-                {{ about.content|linebreaks }}
-            </div>
-            
-            {% if user.is_authenticated and user.is_instructor %}
-                <div style="margin-top: 30px; padding: 15px; background: #f0f8ff; border-radius: 5px;">
-                    <p style="margin: 0;">
-                        <strong>Pouze pro lektora:</strong> 
-                        <a href="{% url 'accounts:about_edit' %}" style="color: #007bff; text-decoration: underline;">
-                            Upravit obsah stránky O mě
-                        </a>
-                    </p>
-                </div>
-            {% endif %}
-        {% else %}
-            <h1>O mě</h1>
-            <div class="instructor-info">
-                <h2>Vítejte</h2>
-                <p class="instructor-bio">
-                    Jsem kvalifikovaný fitness instruktor s vášní pro zdravý životní styl a osobní rozvoj. 
-                    Mým cílem je pomoci vám dosáhnout vašich fitness cílů prostřednictvím individuálního přístupu 
-                    a profesionálního vedení.
-                </p>
-                
-                <h3>Moje kvalifikace</h3>
-                <ul class="qualifications-list">
-                    <li>Certifikovaný osobní trenér</li>
-                    <li>Specialista na funkční trénink</li>
-                    <li>Instruktor skupinových lekcí</li>
-                </ul>
-
-                <h3>Proč si vybrat moje lekce?</h3>
-                <ul class="benefits-list">
-                    <li>Individuální přístup ke každému klientovi</li>
-                    <li>Flexibilní rozvrh lekcí</li>
-                    <li>Moderní tréninkové metody</li>
-                    <li>Příjemné prostředí</li>
-                </ul>
-            </div>
-            
-            {% if user.is_authenticated and user.is_instructor %}
-                <div style="margin-top: 30px; padding: 15px; background: #fff3cd; border-radius: 5px;">
-                    <p style="margin: 0;">
-                        <strong>Tip:</strong> 
-                        <a href="{% url 'accounts:about_edit' %}" style="color: #856404; text-decoration: underline;">
-                            Vytvořte vlastní obsah pro stránku O mě
-                        </a>
-                    </p>
-                </div>
-            {% endif %}
-        {% endif %}
+<section class="about-hero">
+    <div class="about-hero-inner">
+        <h1>Seznamte se s Nikolou Turnerovou</h1>
+        <p>Fitness není honba za dokonalostí. Je to radost, energie a skvělá nálada.</p>
     </div>
-</div>
+    <div class="about-hero-overlay"></div>
+    <div class="about-hero-gradient"></div>
+    <div class="about-hero-shape"></div>
+</section>
+
+<section class="about-section">
+    <div class="about-content card">
+        <article class="about-text">
+            <p>Jen málokdo dokáže spojit hladkou eleganci pohybu s úsměvem, který by dokázal zvednout i největšího sportovního lenocha z gauče. Nikola Turnerová — 24letá fitness trenérka s nakažlivým elánem — přesně to zvládá. Představte si svět, kde dřepy nejsou trestem, ale příležitostí být lepší verzí sebe sama… a kde plank neznamená konec civilizace, ale jen další příjemný mikroboj s vlastním já. Ano, v tomhle světě je Nikola doma!</p>
+
+            <p>Její tréninky nejsou jen série pohybů — jsou to malé dobrodružné výpravy, při kterých vás Nikola provede od první rozpažky až po vítězný high five. Povzbuzuje, směje se s vámi a občas i lehce ďábelsky dodá: „Ještě čtyři!“ (a všichni víme, že to znamená minimálně osm).</p>
+
+            <p>Nikola má dar umět zahlédnout potenciál tam, kde vy zatím jen vidíte pár neochotných svalů. Umí motivovat tak něžně i pevně zároveň, že najednou sami sebe přistihnete, jak se těšíte na další trénink — ano, fakt těšíte!</p>
+
+            <p>Ať už chcete získat sílu, kondici, sebevědomí nebo jen vyrovnat karmu po víkendových hříších ve formě dortíku, Nikola je ta správná parťačka. Fitness pro ni není honba za dokonalostí, ale radost, energie a hlavně dobrá nálada.</p>
+
+            <p><strong>Takže pozor:</strong> trénink s Nikolou může způsobovat přehnanou spokojenost se životem, zlepšenou postavu a tendence dobrovolně lézt na kardio stroje. A na to už musí být člověk vážně dobrý! 💪😄</p>
+        </article>
+    </div>
+</section>
 {% endblock %}
 
 {% block extra_js %}
