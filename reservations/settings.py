@@ -137,7 +137,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 # Auth settings
 LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/o-me/"
 LOGOUT_REDIRECT_URL = "/lekce/"
 
 # Default primary key field type

@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .auth_views import CustomLoginView
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 from .forms import UserLoginForm
@@ -7,10 +8,7 @@ from .forms import UserLoginForm
 app_name = 'accounts'
 
 urlpatterns = [
-    path('login/', auth_views.LoginView.as_view(
-        template_name='accounts/login.html',
-        authentication_form=UserLoginForm
-    ), name='login'),
+    path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(
     template_name='accounts/logout.html'
 ), name='logout'),

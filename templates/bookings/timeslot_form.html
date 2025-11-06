@@ -1,66 +1,233 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load form_extras %}
 
 {% block title %}Přidat termín{% endblock %}
 
+{% block extra_css %}
+<style>
+    .timeslot-form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+    
+    .form-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, #4682b4 0%, #365f8d 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        text-align: center;
+    }
+    
+    .form-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .form-header i {
+        font-size: 1rem;
+        margin-right: 0.5rem;
+    }
+    
+    .form-body {
+        padding: 2rem;
+    }
+    
+    .lesson-info {
+        background: #f8f9fa;
+        border-left: 4px solid #4682b4;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 4px;
+    }
+    
+    .lesson-info strong {
+        color: #4682b4;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-label i {
+        margin-right: 0.5rem;
+        color: #4682b4;
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #4682b4;
+        box-shadow: 0 0 0 0.2rem rgba(70, 130, 180, 0.25);
+        outline: none;
+    }
+    
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+    
+    .info-box {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .info-box i {
+        color: #856404;
+        margin-right: 0.5rem;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #4682b4 0%, #365f8d 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        width: 100%;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(70, 130, 180, 0.3);
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        width: 100%;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        display: block;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    @media (max-width: 768px) {
+        .timeslot-form-container {
+            margin: 1rem;
+        }
+        
+        .form-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h3><i class="fas fa-calendar-plus"></i> Přidat nový termín</h3>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        <strong>Lekce:</strong> {{ lesson.title }}<br>
-                        <strong>Základní datum:</strong> {{ lesson.date|date:"d.m.Y" }}<br>
-                        <strong>Základní čas:</strong> {{ lesson.start_time|time:"H:i" }}
-                    </div>
-
-                    {% if messages %}
-                        {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                        {% endfor %}
-                    {% endif %}
-
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.start_time.id_for_label }}" class="form-label">
-                                Datum a čas termínu *
-                            </label>
-                            {{ form.start_time|add_class:"form-control" }}
-                            {% if form.start_time.errors %}
-                                <div class="invalid-feedback d-block">{{ form.start_time.errors }}</div>
-                            {% endif %}
-                            <small class="text-muted">
-                                Formát: RRRR-MM-DD HH:MM (např. 2025-02-15 10:00)
-                            </small>
-                        </div>
-
-                        <div class="alert alert-warning">
-                            <i class="fas fa-info-circle"></i> 
-                            Tento termín bude automaticky spojen s lekcí "<strong>{{ lesson.title }}</strong>" 
-                            a zobrazí se v kalendáři pro klienty.
-                        </div>
-
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="{% url 'bookings:instructor_lesson_detail' lesson.pk %}" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Zrušit
-                            </a>
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-plus"></i> Přidat termín
-                            </button>
-                        </div>
-                    </form>
-                </div>
+<div class="timeslot-form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h3><i class="fas fa-calendar-plus"></i>Přidat nový termín</h3>
+        </div>
+        
+        <div class="form-body">
+            <div class="lesson-info">
+                <div><strong>Lekce:</strong> {{ lesson.title }}</div>
+                <div><strong>Kategorie:</strong> {{ lesson.category.name|default:"Nezařazeno" }}</div>
+                <div><strong>Kapacita:</strong> {{ lesson.capacity }} osob</div>
+                <div><strong>Délka:</strong> {{ lesson.duration }} minut</div>
             </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.date.id_for_label }}" class="form-label">
+                        <i class="fas fa-calendar"></i> Datum termínu *
+                    </label>
+                    {{ form.date }}
+                    {% if form.date.errors %}
+                        <div class="invalid-feedback d-block">{{ form.date.errors }}</div>
+                    {% else %}
+                        <small class="form-text">Vyberte datum, kdy se lekce uskuteční</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.time.id_for_label }}" class="form-label">
+                        <i class="fas fa-clock"></i> Čas začátku *
+                    </label>
+                    {{ form.time }}
+                    {% if form.time.errors %}
+                        <div class="invalid-feedback d-block">{{ form.time.errors }}</div>
+                    {% else %}
+                        <small class="form-text">Vyberte čas, kdy lekce začne</small>
+                    {% endif %}
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    Tento termín bude automaticky přidán do kalendáře a klienti si jej budou moci rezervovat.
+                </div>
+
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-check"></i> Přidat termín
+                </button>
+                
+                <a href="{% url 'bookings:instructor_lesson_detail' lesson.pk %}" class="btn-cancel">
+                    <i class="fas fa-times"></i> Zrušit
+                </a>
+            </form>
         </div>
     </div>
 </div>

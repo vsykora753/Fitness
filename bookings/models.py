@@ -72,7 +72,7 @@ class TimeSlot(models.Model):
     is_available = models.BooleanField(default=True)
     
     def clean(self):
-        if self.start_time < timezone.now():
+        if self.start_time and self.start_time < timezone.now():
             raise ValidationError("Nelze vytvořit termín v minulosti")
     
     def __str__(self):

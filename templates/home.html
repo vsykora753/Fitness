@@ -1,36 +1,47 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Fitness Lektor | Domů{% endblock %}
+{% block title %}Fitness Rezervace | Domů{% endblock %}
 
 {% block body_class %}{% endblock %}
 
-
 {% block content %}
 <div class="about-section">
-    {% if instructor %}
-    <div class="instructor-info">
-        <h2>{{ instructor.get_full_name }}</h2>
-        <p class="instructor-bio">
-            {{ instructor.bio|default:"Jsem kvalifikovaný fitness instruktor s vášní pro zdravý životní styl a osobní rozvoj. Mým cílem je pomoci vám dosáhnout vašich fitness cílů prostřednictvím individuálního přístupu a profesionálního vedení." }}
+    <div class="welcome-info">
+        <h1>Vítejte v rezervačním systému fitness lekcí</h1>
+        <p class="lead">
+            Moderní a jednoduché rezervace fitness lekcí s profesionálními lektory. 
+            Vyberte si z nabídky lekcí a začněte svou cestu ke zdravějšímu životnímu stylu.
         </p>
         
-        <h3>Moje kvalifikace</h3>
-        <ul class="qualifications-list">
-            <li>Certifikovaný osobní trenér</li>
-            <li>Specialista na funkční trénink</li>
-            <li>Instruktor skupinových lekcí</li>
-        </ul>
+        <div class="features-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
+            <div class="feature-card" style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <h3>🏋️ Rozmanitý výběr lekcí</h3>
+                <p>Jóga, Pilates, Cardio a mnoho dalších typů tréninků.</p>
+            </div>
+            
+            <div class="feature-card" style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <h3>📅 Snadná rezervace</h3>
+                <p>Jednoduše si vyberte termín a rezervujte online.</p>
+            </div>
+            
+            <div class="feature-card" style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <h3>👨‍🏫 Profesionální lektoři</h3>
+                <p>Certifikovaní instruktoři s dlouholetými zkušenostmi.</p>
+            </div>
+        </div>
 
-        <h3>Proč si vybrat moje lekce?</h3>
-        <ul class="benefits-list">
-            <li>Individuální přístup ke každému klientovi</li>
-            <li>Flexibilní rozvrh lekcí</li>
-            <li>Moderní tréninkové metody</li>
-            <li>Příjemné prostředí</li>
-        </ul>
+        <div style="margin-top: 40px; text-align: center;">
+            <a href="{% url 'lessons' %}" class="btn btn-primary" style="padding: 12px 30px; font-size: 1.1em; text-decoration: none; background: #007bff; color: white; border-radius: 5px; display: inline-block;">
+                Zobrazit rozvrh lekcí
+            </a>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'accounts:register' %}" class="btn btn-secondary" style="padding: 12px 30px; font-size: 1.1em; text-decoration: none; background: #6c757d; color: white; border-radius: 5px; display: inline-block; margin-left: 10px;">
+                    Registrovat se
+                </a>
+            {% endif %}
+        </div>
     </div>
-    {% endif %}
 </div>
 {% endblock %}
 

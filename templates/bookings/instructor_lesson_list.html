@@ -3,6 +3,53 @@
 
 {% block title %}Moje lekce{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Menší tlačítka */
+    .action-buttons .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        white-space: nowrap;
+    }
+    
+    .action-buttons .btn i {
+        font-size: 0.7rem;
+    }
+    
+    /* Na mobilech vertikální rozložení */
+    @media (max-width: 768px) {
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .action-buttons .btn {
+            width: 100%;
+            font-size: 0.7rem;
+        }
+        
+        /* Skrýt některé sloupce na mobilu */
+        .table th:nth-child(3),
+        .table td:nth-child(3),
+        .table th:nth-child(7),
+        .table td:nth-child(7),
+        .table th:nth-child(8),
+        .table td:nth-child(8) {
+            display: none;
+        }
+    }
+    
+    /* Na tabletech horizontální, ale menší */
+    @media (min-width: 769px) and (max-width: 991px) {
+        .action-buttons .btn {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
     <div class="row">
@@ -64,26 +111,26 @@
                                 <span class="badge bg-primary">{{ lesson.timeslot_set.count }}</span>
                             </td>
                             <td>
-                                <div class="btn-group btn-group-sm" role="group">
+                                <div class="action-buttons">
                                     <a href="{% url 'bookings:instructor_lesson_detail' lesson.pk %}" 
                                        class="btn btn-outline-info" 
                                        title="Detail lekce">
-                                        <i class="fas fa-eye"></i>
+                                        <i class="fas fa-eye"></i> Detail
                                     </a>
                                     <a href="{% url 'bookings:lesson_edit' lesson.pk %}" 
                                        class="btn btn-outline-warning" 
                                        title="Upravit">
-                                        <i class="fas fa-edit"></i>
+                                        <i class="fas fa-edit"></i> Upravit
                                     </a>
                                     <a href="{% url 'bookings:timeslot_add' lesson.pk %}" 
                                        class="btn btn-outline-success" 
                                        title="Přidat termín">
-                                        <i class="fas fa-calendar-plus"></i>
+                                        <i class="fas fa-calendar-plus"></i> Termín
                                     </a>
                                     <a href="{% url 'bookings:lesson_delete' lesson.pk %}" 
                                        class="btn btn-outline-danger" 
                                        title="Smazat">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="fas fa-trash"></i> Smazat
                                     </a>
                                 </div>
                             </td>

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}O mě | Fitness Rezervace{% endblock %}
+
+{% block content %}
+<div class="about-section">
+    <div class="about-content">
+        {% if about %}
+            <h1>{{ about.title }}</h1>
+            <div class="about-text">
+                {{ about.content|linebreaks }}
+            </div>
+            
+            {% if user.is_authenticated and user.is_instructor %}
+                <div style="margin-top: 30px; padding: 15px; background: #f0f8ff; border-radius: 5px;">
+                    <p style="margin: 0;">
+                        <strong>Pouze pro lektora:</strong> 
+                        <a href="{% url 'accounts:about_edit' %}" style="color: #007bff; text-decoration: underline;">
+                            Upravit obsah stránky O mě
+                        </a>
+                    </p>
+                </div>
+            {% endif %}
+        {% else %}
+            <h1>O mě</h1>
+            <div class="instructor-info">
+                <h2>Vítejte</h2>
+                <p class="instructor-bio">
+                    Jsem kvalifikovaný fitness instruktor s vášní pro zdravý životní styl a osobní rozvoj. 
+                    Mým cílem je pomoci vám dosáhnout vašich fitness cílů prostřednictvím individuálního přístupu 
+                    a profesionálního vedení.
+                </p>
+                
+                <h3>Moje kvalifikace</h3>
+                <ul class="qualifications-list">
+                    <li>Certifikovaný osobní trenér</li>
+                    <li>Specialista na funkční trénink</li>
+                    <li>Instruktor skupinových lekcí</li>
+                </ul>
+
+                <h3>Proč si vybrat moje lekce?</h3>
+                <ul class="benefits-list">
+                    <li>Individuální přístup ke každému klientovi</li>
+                    <li>Flexibilní rozvrh lekcí</li>
+                    <li>Moderní tréninkové metody</li>
+                    <li>Příjemné prostředí</li>
+                </ul>
+            </div>
+            
+            {% if user.is_authenticated and user.is_instructor %}
+                <div style="margin-top: 30px; padding: 15px; background: #fff3cd; border-radius: 5px;">
+                    <p style="margin: 0;">
+                        <strong>Tip:</strong> 
+                        <a href="{% url 'accounts:about_edit' %}" style="color: #856404; text-decoration: underline;">
+                            Vytvořte vlastní obsah pro stránku O mě
+                        </a>
+                    </p>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/navbar.js' %}"></script>
+{% endblock %}

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import TimeSlot, Booking, Lesson, Category
+from .forms import TimeSlotForm
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
@@ -48,15 +49,6 @@ def get_events(request):
         })
     
     return JsonResponse(events, safe=False)
-
-class HomeView(TemplateView):
-    template_name = 'home.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated and self.request.user.is_instructor:
-            context['instructor'] = self.request.user
-        return context
 
 class ContactView(TemplateView):
     template_name = 'contact.html'
@@ -196,7 +188,7 @@ class InstructorRequiredMixin(UserPassesTestMixin):
     
     def handle_no_permission(self):
         messages.error(self.request, "K této stránce nemáte přístup.")
-        return redirect('home')
+        return redirect('about')
 
 
 class InstructorLessonListView(InstructorRequiredMixin, ListView):
@@ -326,7 +318,7 @@ class TimeSlotCreateView(InstructorRequiredMixin, CreateView):
     """Přidání časového slotu k lekci."""
     model = TimeSlot
     template_name = 'bookings/timeslot_form.html'
-    fields = ['start_time']
+    form_class = TimeSlotForm
     
     def dispatch(self, request, *args, **kwargs):
         # Ověříme, že lekce existuje a patří lektorovi
