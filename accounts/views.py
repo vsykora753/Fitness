@@ -6,8 +6,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView, TemplateView
 from django.urls import reverse_lazy
-from .forms import UserRegisterForm
-from payments.models import TopUp
+from .forms import UserRegisterForm, AboutPageForm
+from payments.models import TopUp, Payment
+from .models import AboutPage
 
 User = get_user_model()
 
@@ -35,11 +36,25 @@ class ProfileView(LoginRequiredMixin, UpdateView):
 class InstructorDashboardView(LoginRequiredMixin, TemplateView):
 	template_name = 'accounts/instructor_dashboard.html'
     
+	def dispatch(self, request, *args, **kwargs):
+		# Pouze instruktor má přístup na dashboard lektora
+		if not request.user.is_authenticated or request.user.user_type != 'instructor':
+			return redirect('home')
+		return super().dispatch(request, *args, **kwargs)
+    
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		if self.request.user.user_type != 'instructor':
-			return redirect('home')
+		# Čekající dobití (globálně pro všechny klienty)
 		context['pending_topups'] = TopUp.objects.filter(status='pending')[:10]
+		# Čekající platby směřované na přihlášeného lektora
+		context['pending_payments'] = (
+			Payment.objects
+			.filter(instructor=self.request.user, status='pending')
+			.select_related('client')
+			.order_by('-created_at')[:10]
+		)
+		# Volitelně: posledních pár lekcí lektora (pro rychlý přehled)
+		context['recent_lessons'] = self.request.user.instructor_lessons.all()[:5]
 		return context
 
 class ClientDashboardView(LoginRequiredMixin, TemplateView):
@@ -50,3 +65,32 @@ class ClientDashboardView(LoginRequiredMixin, TemplateView):
 		if self.request.user.user_type != 'client':
 			return redirect('home')
 		return context
+
+
+class AboutView(TemplateView):
+	template_name = 'about.html'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		page = AboutPage.get_solo()
+		context['about'] = page
+		return context
+
+
+class AboutEditView(LoginRequiredMixin, UpdateView):
+	template_name = 'accounts/about_edit.html'
+	form_class = AboutPageForm
+	success_url = reverse_lazy('home')
+
+	def dispatch(self, request, *args, **kwargs):
+		# Pouze instruktor může upravovat stránku O mně
+		if not request.user.is_authenticated or not getattr(request.user, 'is_instructor', False):
+			return redirect('home')
+		return super().dispatch(request, *args, **kwargs)
+
+	def get_object(self):
+		# Vytvoří instanci při prvním uložení, pokud ještě neexistuje
+		obj = AboutPage.objects.first()
+		if obj:
+			return obj
+		return AboutPage()

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Moje lekce{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Moje lekce</h2>
+                <a href="{% url 'bookings:lesson_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Přidat novou lekci
+                </a>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if lessons %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Název</th>
+                            <th>Kategorie</th>
+                            <th>Datum</th>
+                            <th>Čas</th>
+                            <th>Kapacita</th>
+                            <th>Cena</th>
+                            <th>Lokace</th>
+                            <th>Termíny</th>
+                            <th>Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lesson in lessons %}
+                        <tr>
+                            <td>
+                                <strong>{{ lesson.title }}</strong>
+                                {% if lesson.description %}
+                                <br><small class="text-muted">{{ lesson.description|truncatewords:10 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if lesson.category %}
+                                <span class="badge bg-info">{{ lesson.category.name }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Nezařazeno</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ lesson.date|date:"d.m.Y" }}</td>
+                            <td>{{ lesson.start_time|time:"H:i" }}</td>
+                            <td>{{ lesson.capacity }} osob</td>
+                            <td>{{ lesson.price }} Kč</td>
+                            <td>{{ lesson.location|default:"—" }}</td>
+                            <td>
+                                <span class="badge bg-primary">{{ lesson.timeslot_set.count }}</span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'bookings:instructor_lesson_detail' lesson.pk %}" 
+                                       class="btn btn-outline-info" 
+                                       title="Detail lekce">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'bookings:lesson_edit' lesson.pk %}" 
+                                       class="btn btn-outline-warning" 
+                                       title="Upravit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'bookings:timeslot_add' lesson.pk %}" 
+                                       class="btn btn-outline-success" 
+                                       title="Přidat termín">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </a>
+                                    <a href="{% url 'bookings:lesson_delete' lesson.pk %}" 
+                                       class="btn btn-outline-danger" 
+                                       title="Smazat">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> Zatím nemáte žádné lekce</h5>
+                <p>Klikněte na tlačítko "Přidat novou lekci" pro vytvoření první lekce.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'accounts:instructor_dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Zpět na dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

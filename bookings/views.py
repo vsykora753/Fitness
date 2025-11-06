@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.views.generic import TemplateView, ListView, DetailView
-from .models import TimeSlot, Booking, Lesson
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
+from .models import TimeSlot, Booking, Lesson, Category
 from django.utils import timezone
-from django.views.generic.edit import CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.views import View
+from datetime import datetime
 
 class CalendarView(TemplateView):
     template_name = 'bookings/calendar.html'
@@ -103,15 +103,12 @@ class LessonListView(ListView):
                 'available_spots': available_spots,
                 'capacity': slot.lesson.capacity,
                 'instructor': slot.lesson.instructor.get_full_name(),
-                'category': slot.lesson.category,
+                'category': slot.lesson.category.slug if slot.lesson.category else 'other',
                 'location': slot.lesson.location
             })
         
-        # Kategorie pro ouška (z definice v modelu)
-        try:
-            categories = list(Lesson.LESSON_CATEGORIES)
-        except Exception:
-            categories = []
+        # Kategorie pro ouška - načteme z databáze
+        categories = [(cat.slug, cat.name) for cat in Category.objects.all().order_by('order', 'name')]
 
         context['lessons_by_day'] = lessons_by_day
         context['current_month'] = current_date.month
@@ -188,3 +185,190 @@ class BookingCancelView(LoginRequiredMixin, View):
             messages.error(request, f"Chyba při rušení rezervace: {str(e)}")
         
         return redirect('accounts:client_dashboard')
+
+
+# ===== INSTRUCTOR VIEWS =====
+
+class InstructorRequiredMixin(UserPassesTestMixin):
+    """Mixin který zajistí, že pouze instruktor má přístup k view."""
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.user_type == 'instructor'
+    
+    def handle_no_permission(self):
+        messages.error(self.request, "K této stránce nemáte přístup.")
+        return redirect('home')
+
+
+class InstructorLessonListView(InstructorRequiredMixin, ListView):
+    """Seznam všech lekcí daného lektora."""
+    model = Lesson
+    template_name = 'bookings/instructor_lesson_list.html'
+    context_object_name = 'lessons'
+    
+    def get_queryset(self):
+        return Lesson.objects.filter(instructor=self.request.user).order_by('-date', '-start_time')
+
+
+class LessonCreateView(InstructorRequiredMixin, CreateView):
+    """Vytvoření nové lekce lektorem."""
+    model = Lesson
+    template_name = 'bookings/lesson_form.html'
+    fields = ['title', 'description', 'category', 'price', 'duration', 'capacity', 'date', 'start_time', 'location']
+    success_url = reverse_lazy('bookings:instructor_lessons')
+    
+    def form_valid(self, form):
+        # Uložíme lekci pod přihlášeného lektora
+        form.instance.instructor = self.request.user
+        response = super().form_valid(form)
+
+        # Po vytvoření lekce automaticky vytvoříme první TimeSlot
+        # podle zadaného datumu a času z modelu Lesson (aby se objevila v kalendáři).
+        lesson = self.object
+        try:
+            start_dt = datetime.combine(lesson.date, lesson.start_time)
+            if timezone.is_naive(start_dt):
+                start_dt = timezone.make_aware(start_dt, timezone.get_current_timezone())
+
+            # Pokud pro daný lesson+čas už slot existuje, nevytvářej duplicitně
+            exists = TimeSlot.objects.filter(lesson=lesson, start_time=start_dt).exists()
+            if not exists:
+                TimeSlot.objects.create(lesson=lesson, start_time=start_dt, is_available=True)
+        except Exception as e:
+            # Nezablokovat uložení lekce kvůli TimeSlotu, ale informovat uživatele
+            messages.warning(self.request, f"Lekce byla vytvořena, ale nepodařilo se automaticky vytvořit termín: {e}")
+
+        messages.success(self.request, f"Lekce '{lesson.title}' byla úspěšně vytvořena.")
+        return response
+
+
+class LessonUpdateView(InstructorRequiredMixin, UpdateView):
+    """Editace existující lekce lektorem."""
+    model = Lesson
+    template_name = 'bookings/lesson_form.html'
+    fields = ['title', 'description', 'category', 'price', 'duration', 'capacity', 'date', 'start_time', 'location']
+    success_url = reverse_lazy('bookings:instructor_lessons')
+    
+    def get_queryset(self):
+        # Lektor může editovat pouze své vlastní lekce
+        return Lesson.objects.filter(instructor=self.request.user)
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        lesson = self.object
+        try:
+            new_start = datetime.combine(lesson.date, lesson.start_time)
+            if timezone.is_naive(new_start):
+                new_start = timezone.make_aware(new_start, timezone.get_current_timezone())
+
+            # Zkusíme upravit první existující slot pro tuto lekci
+            slot = TimeSlot.objects.filter(lesson=lesson).order_by('start_time').first()
+            if slot:
+                slot.start_time = new_start
+                slot.is_available = True
+                slot.save()
+            else:
+                TimeSlot.objects.create(lesson=lesson, start_time=new_start, is_available=True)
+        except Exception as e:
+            messages.warning(self.request, f"Lekce byla aktualizována, ale nepodařilo se upravit/vytvořit termín: {e}")
+
+        messages.success(self.request, f"Lekce '{lesson.title}' byla úspěšně aktualizována.")
+        return response
+
+
+class LessonDeleteView(InstructorRequiredMixin, DeleteView):
+    """Smazání lekce lektorem."""
+    model = Lesson
+    template_name = 'bookings/lesson_confirm_delete.html'
+    success_url = reverse_lazy('bookings:instructor_lessons')
+    
+    def get_queryset(self):
+        # Lektor může mazat pouze své vlastní lekce
+        return Lesson.objects.filter(instructor=self.request.user)
+    
+    def delete(self, request, *args, **kwargs):
+        lesson = self.get_object()
+        messages.success(request, f"Lekce '{lesson.title}' byla úspěšně smazána.")
+        return super().delete(request, *args, **kwargs)
+
+
+class InstructorLessonDetailView(InstructorRequiredMixin, DetailView):
+    """Detail lekce s přehledem přihlášených klientů."""
+    model = Lesson
+    template_name = 'bookings/instructor_lesson_detail.html'
+    context_object_name = 'lesson'
+    
+    def get_queryset(self):
+        return Lesson.objects.filter(instructor=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lesson = self.object
+        
+        # Všechny časové sloty pro tuto lekci
+        time_slots = TimeSlot.objects.filter(lesson=lesson).order_by('start_time')
+        context['time_slots'] = time_slots
+        
+        # Všechny potvrzené rezervace pro tuto lekci
+        bookings = Booking.objects.filter(
+            time_slot__lesson=lesson,
+            status='confirmed'
+        ).select_related('client', 'time_slot').order_by('time_slot__start_time')
+        context['bookings'] = bookings
+        
+        # Statistiky
+        context['total_bookings'] = bookings.count()
+        context['total_slots'] = time_slots.count()
+        
+        return context
+
+
+class TimeSlotCreateView(InstructorRequiredMixin, CreateView):
+    """Přidání časového slotu k lekci."""
+    model = TimeSlot
+    template_name = 'bookings/timeslot_form.html'
+    fields = ['start_time']
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Ověříme, že lekce existuje a patří lektorovi
+        self.lesson = get_object_or_404(Lesson, pk=self.kwargs['lesson_id'], instructor=request.user)
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lesson'] = self.lesson
+        return context
+    
+    def form_valid(self, form):
+        form.instance.lesson = self.lesson
+        messages.success(self.request, f"Nový termín byl přidán k lekci '{self.lesson.title}'.")
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('bookings:instructor_lesson_detail', kwargs={'pk': self.lesson.pk})
+
+
+class TimeSlotDeleteView(InstructorRequiredMixin, DeleteView):
+    """Smazání časového slotu."""
+    model = TimeSlot
+    template_name = 'bookings/timeslot_confirm_delete.html'
+    
+    def get_queryset(self):
+        # Lektor může mazat pouze sloty svých vlastních lekcí
+        return TimeSlot.objects.filter(lesson__instructor=self.request.user)
+    
+    def delete(self, request, *args, **kwargs):
+        slot = self.get_object()
+        # Zkontrolujeme, zda nejsou na tento slot rezervace
+        bookings_count = Booking.objects.filter(time_slot=slot, status='confirmed').count()
+        if bookings_count > 0:
+            messages.error(request, f"Nelze smazat termín, protože má {bookings_count} aktivních rezervací.")
+            return redirect('bookings:instructor_lesson_detail', pk=slot.lesson.pk)
+        
+        lesson_pk = slot.lesson.pk
+        messages.success(request, f"Termín {slot.start_time.strftime('%d.%m.%Y %H:%M')} byl úspěšně smazán.")
+        self.object = slot
+        self.object.delete()
+        return redirect('bookings:instructor_lesson_detail', pk=lesson_pk)
+    
+    def get_success_url(self):
+        return reverse_lazy('bookings:instructor_lesson_detail', kwargs={'pk': self.object.lesson.pk})

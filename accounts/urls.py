@@ -26,4 +26,6 @@ urlpatterns = [
     ), name='password_change_done'),
     path('instructor/dashboard/', views.InstructorDashboardView.as_view(), name='instructor_dashboard'),
     path('client/dashboard/', views.ClientDashboardView.as_view(), name='client_dashboard'),
+    # Editace stránky O mně (pouze instruktor)
+    path('about/edit/', views.AboutEditView.as_view(), name='about_edit'),
 ]

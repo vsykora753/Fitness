@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
         slotMaxTime: '22:00:00',
         allDaySlot: false,
         height: 'auto',
-        events: "{% url 'get_events' %}",
+    events: "{% url 'bookings:get_events' %}",
         eventClick: function(info) {
             showLessonDetails(info.event);
         }
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p><strong>Volná místa:</strong> ${event.extendedProps.availableSpots}/${event.extendedProps.capacity}</p>
             ${event.extendedProps.description ? `<p><strong>Popis:</strong> ${event.extendedProps.description}</p>` : ''}
             ${event.extendedProps.isAvailable ? 
-                `<a href="/booking/create/${event.extendedProps.timeSlotId}" class="btn btn-primary">Rezervovat</a>` :
+                `<a href="${"{% url 'bookings:booking_create' 0 %}".replace('0', event.extendedProps.timeSlotId)}" class="btn btn-primary">Rezervovat</a>` :
                 `<button class="btn btn-secondary" disabled>Obsazeno</button>`
             }
         `;

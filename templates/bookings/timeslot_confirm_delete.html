@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Smazat termín{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Potvrzení smazání termínu</h3>
+                </div>
+                <div class="card-body">
+                    <h5>Opravdu chcete smazat tento termín?</h5>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <strong>Lekce:</strong> {{ object.lesson.title }}<br>
+                        <strong>Datum a čas:</strong> {{ object.start_time|date:"d.m.Y H:i" }}<br>
+                        <strong>Počet rezervací:</strong> {{ object.booking_set.count }}
+                    </div>
+
+                    {% with booked=object.booking_set.count %}
+                    {% if booked > 0 %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> 
+                        <strong>Varování:</strong> Tento termín má {{ booked }} aktivních rezervací. 
+                        Smazáním termínu zrušíte tyto rezervace!
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'bookings:instructor_lesson_detail' object.lesson.pk %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Zrušit
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Ano, smazat termín
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

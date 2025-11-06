@@ -2,10 +2,34 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.utils.text import slugify
 from decimal import Decimal
 from datetime import timedelta
 
 from django.utils import timezone
+
+
+class Category(models.Model):
+    """
+    Kategorie lekcí (Jóga, Pilates, Cardio, ...) – spravovatelné přes admin.
+    """
+    name = models.CharField(max_length=100, unique=True, verbose_name='Název kategorie')
+    slug = models.SlugField(max_length=100, unique=True, blank=True, verbose_name='Slug (URL)')
+    description = models.TextField(blank=True, verbose_name='Popis')
+    order = models.IntegerField(default=0, verbose_name='Pořadí', help_text='Nižší číslo = dříve v seznamu')
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = 'Kategorie'
+        verbose_name_plural = 'Kategorie'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 class Lesson(models.Model):
     instructor = models.ForeignKey(
@@ -22,19 +46,25 @@ class Lesson(models.Model):
     date = models.DateField(help_text="Datum konání lekce", default=timezone.now)
     start_time = models.TimeField(help_text="Čas začátku lekce", default="09:00")
     location = models.CharField(max_length=200, help_text="Místo konání lekce", default="Fitness centrum")
-    # Kategorie / typ lekce (ouška)
-    LESSON_CATEGORIES = (
-        ('yoga', 'Jóga'),
-        ('cardio', 'Cardio'),
-        ('strength', 'Silový trénink'),
-        ('pilates', 'Pilates'),
-        ('stretch', 'Stretch/rozcvička'),
-        ('other', 'Jiné'),
+    
+    # Kategorie / typ lekce – nyní FK na Category model
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='lessons',
+        verbose_name='Kategorie'
     )
-    category = models.CharField(max_length=20, choices=LESSON_CATEGORIES, default='other')
     
     def __str__(self):
-        return f"{self.title} - {self.instructor.get_full_name()} ({self.get_category_display()})"
+        category_name = self.category.name if self.category else 'Bez kategorie'
+        return f"{self.title} - {self.instructor.get_full_name()} ({category_name})"
+    
+    @property
+    def category_slug(self):
+        """Helper property pro JS – vrací slug kategorie nebo 'other'."""
+        return self.category.slug if self.category else 'other'
 
 class TimeSlot(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)

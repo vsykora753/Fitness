@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detail lekce: {{ lesson.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>{{ lesson.title }}</h2>
+                <div>
+                    <a href="{% url 'bookings:lesson_edit' lesson.pk %}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Upravit
+                    </a>
+                    <a href="{% url 'bookings:timeslot_add' lesson.pk %}" class="btn btn-success">
+                        <i class="fas fa-calendar-plus"></i> Přidat termín
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-info-circle"></i> Informace o lekci</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="40%">Kategorie:</th>
+                            <td>
+                                {% if lesson.category %}
+                                <span class="badge bg-info">{{ lesson.category.name }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Nezařazeno</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Datum:</th>
+                            <td>{{ lesson.date|date:"d.m.Y" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Čas začátku:</th>
+                            <td>{{ lesson.start_time|time:"H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Délka:</th>
+                            <td>{{ lesson.duration }} minut</td>
+                        </tr>
+                        <tr>
+                            <th>Cena:</th>
+                            <td><strong>{{ lesson.price }} Kč</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Kapacita:</th>
+                            <td>{{ lesson.capacity }} osob</td>
+                        </tr>
+                        <tr>
+                            <th>Lokace:</th>
+                            <td>{{ lesson.location|default:"—" }}</td>
+                        </tr>
+                    </table>
+                    {% if lesson.description %}
+                    <hr>
+                    <p><strong>Popis:</strong><br>{{ lesson.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-chart-bar"></i> Statistiky</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <h3 class="text-primary">{{ total_slots }}</h3>
+                                <p class="mb-0">Celkem termínů</p>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <h3 class="text-success">{{ total_bookings }}</h3>
+                                <p class="mb-0">Rezervací</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-calendar-alt"></i> Časové sloty</h5>
+                </div>
+                <div class="card-body">
+                    {% if time_slots %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Datum a čas</th>
+                                    <th>Dostupnost</th>
+                                    <th>Rezervace</th>
+                                    <th>Akce</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for slot in time_slots %}
+                                <tr>
+                                    <td>{{ slot.start_time|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        {% if slot.is_available %}
+                                        <span class="badge bg-success">Dostupný</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Nedostupný</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ slot.booking_set.count }} / {{ lesson.capacity }}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'bookings:timeslot_delete' slot.pk %}" 
+                                           class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('Opravdu chcete smazat tento termín?');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> K této lekci zatím nejsou přidány žádné časové sloty.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-warning">
+                    <h5><i class="fas fa-users"></i> Přihlášení klienti</h5>
+                </div>
+                <div class="card-body">
+                    {% if bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Klient</th>
+                                    <th>Email</th>
+                                    <th>Telefon</th>
+                                    <th>Termín</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td>{{ booking.client.get_full_name }}</td>
+                                    <td>{{ booking.client.email }}</td>
+                                    <td>{{ booking.client.phone_number|default:"—" }}</td>
+                                    <td>{{ booking.time_slot.start_time|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        {% if booking.status == 'confirmed' %}
+                                        <span class="badge bg-success">Potvrzeno</span>
+                                        {% elif booking.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Zrušeno</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">{{ booking.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Na tuto lekci zatím nejsou žádné potvrzené rezervace.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'bookings:instructor_lessons' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Zpět na seznam lekcí
+        </a>
+        <a href="{% url 'accounts:instructor_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

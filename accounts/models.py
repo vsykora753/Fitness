@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 
 class User(AbstractUser):
     USER_TYPE_CHOICES = (
@@ -32,3 +33,28 @@ class User(AbstractUser):
     @property
     def is_client(self) -> bool:
         return self.user_type == 'client'
+
+
+class AboutPage(models.Model):
+    """
+    Jednoduchá editovatelná stránka "O mě". Očekává se jedna instance.
+    Spravovatelná přes admin rozhraní nebo vlastní edit formulář.
+    """
+    title = models.CharField(max_length=200, default='O mně')
+    content = models.TextField(blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Stránka O mně'
+        verbose_name_plural = 'Stránky O mně'
+
+    def __str__(self) -> str:
+        return self.title or 'O mně'
+
+    @classmethod
+    def get_solo(cls):
+        """Vrátí existující instanci nebo novou nevytvořenou (neuloženou) s defaulty."""
+        obj = cls.objects.first()
+        if obj:
+            return obj
+        return cls(title='O mně', content='')

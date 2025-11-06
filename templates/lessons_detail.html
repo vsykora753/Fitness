@@ -42,7 +42,7 @@
                             {% endif %}
                         </div>
                         {% if user.is_authenticated and not user.is_instructor and slot.is_available %}
-                            <a href="{% url 'booking_create' slot.id %}" class="btn">Rezervovat tento termín</a>
+                            <a href="{% url 'bookings:booking_create' slot.id %}" class="btn">Rezervovat tento termín</a>
                         {% endif %}
                     </div>
                 {% endfor %}

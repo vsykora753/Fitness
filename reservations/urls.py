@@ -10,7 +10,7 @@ urlpatterns = [
     path("lekce/", LessonListView.as_view(), name="lessons"),
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
-    path("bookings/", include("bookings.urls")),
+    path("bookings/", include(("bookings.urls", "bookings"), namespace="bookings")),
     path("payments/", include("payments.urls")),
 ]
 

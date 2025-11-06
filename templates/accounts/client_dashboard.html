@@ -54,7 +54,7 @@
                 {% for b in bookings|slice:':10' %}
                   <tr>
                     <td>
-                      <a href="{% url 'lesson_detail' b.time_slot.lesson.id %}" style="text-decoration:underline; color:#4682b4;">{{ b.time_slot.lesson.title }}</a>
+                      <a href="{% url 'bookings:lesson_detail' b.time_slot.lesson.id %}" style="text-decoration:underline; color:#4682b4;">{{ b.time_slot.lesson.title }}</a>
                     </td>
                     <td>{{ b.time_slot.start_time|date:'d.m.Y H:i' }}</td>
                     <td>{{ b.time_slot.lesson.location }}</td>
@@ -63,7 +63,7 @@
                       {% if b.status != 'cancelled' %}
                         {% if b.can_cancel %}
                           <span style="color:#28a745; font-size:12px;">lze zrušit do {{ b.cancellation_deadline|date:'d.m. H:i' }}</span><br>
-                          <form method="post" action="{% url 'booking_cancel' b.id %}" style="display:inline;">
+                          <form method="post" action="{% url 'bookings:booking_cancel' b.id %}" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn" style="padding:4px 10px; font-size:13px; background:#dc3545; margin-top:2px;" onclick="return confirm('Opravdu chcete zrušit tuto rezervaci?')">Zrušit</button>
                           </form>
