@@ -16,7 +16,7 @@ html, body {
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', 'Cormorant Garamond', serif;
   color: #333;
   line-height: 1.6;
   min-height: 100vh;
@@ -972,19 +972,26 @@ nav a:hover {
   text-align: center;
   color: #fff;
   padding: 60px 20px;
+  max-width: 760px; /* zúžení obsahu hero */
+  margin: 0 auto; /* centrování */
 }
 
 .about-hero h1 {
+  font-family: 'Playfair Display', serif;
   font-size: 42px;
   font-weight: 800;
   letter-spacing: 0.5px;
   text-shadow: 0 2px 18px rgba(0,0,0,0.2);
+  line-height: 1.15;
 }
 
 .about-hero p {
   margin-top: 12px;
   font-size: 18px;
   opacity: 0.95;
+  max-width: 620px; /* zúžení podtitulku */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .about-section {
@@ -1011,9 +1018,82 @@ nav a:hover {
   color: #4682b4;
 }
 
+/* Review list styling */
+.about-review-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.about-review-item {
+  position: relative;
+  padding: 18px 20px 18px 68px;
+  background: linear-gradient(135deg, #ffffff, #f9fbfd);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s;
+}
+
+.about-review-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+  border-color: #cdd9e5;
+}
+
+.about-review-item p {
+  margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+/* mezera mezi odstavci uvnitř jedné recenze */
+.about-review-body p + p { margin-top: 12px; }
+
+.about-review-icon {
+  position: absolute;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4682b4, #5f97c4);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(70,130,180,0.35);
+  letter-spacing: .5px;
+}
+
+/* jemný connecting line (vertical) */
+.about-review-list .about-review-item::before {
+  content: "";
+  position: absolute;
+  left: 39px;
+  top: -22px;
+  width: 2px;
+  height: 22px;
+  background: linear-gradient(to bottom, #4682b4, transparent);
+}
+.about-review-list .about-review-item:first-child::before { display: none; }
+
+@media (max-width: 768px) {
+  .about-review-item { padding: 16px 16px 16px 60px; }
+  .about-review-icon { left: 16px; }
+  .about-review-list .about-review-item::before { left: 33px; }
+}
+
 @media (max-width: 768px) {
   .about-hero { min-height: 260px; }
-  .about-hero h1 { font-size: 28px; }
-  .about-hero p { font-size: 16px; }
+  .about-hero h1 { font-size: 30px; font-weight: 700; }
+  .about-hero p { font-size: 16px; max-width: 90%; }
   .about-content.card { margin-top: -28px; padding: 20px; }
 }
