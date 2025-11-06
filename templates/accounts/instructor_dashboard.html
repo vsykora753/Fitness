@@ -31,9 +31,13 @@
     
     .dashboard-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        grid-template-columns: 1fr;
         gap: 1.5rem;
         margin-bottom: 2rem;
+    }
+    
+    .lessons-full-section {
+        grid-column: 1 / -1;
     }
     
     .card {
@@ -132,6 +136,73 @@
         grid-column: 1 / -1;
     }
     
+    .lessons-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+    
+    .lessons-table thead {
+        background: linear-gradient(135deg, #4682b4 0%, #365f8d 100%);
+        color: white;
+    }
+    
+    .lessons-table thead th {
+        padding: 0.8rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .lessons-table tbody tr {
+        border-bottom: 1px solid #e0e0e0;
+        transition: background-color 0.2s ease;
+    }
+    
+    .lessons-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .lessons-table tbody td {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
+    
+    .lesson-actions {
+        display: flex;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+    }
+    
+    .lesson-actions .btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
+    
+    .badge-category {
+        padding: 0.3rem 0.6rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background-color: #17a2b8;
+        color: white;
+    }
+    
+    .badge-secondary {
+        background-color: #6c757d;
+    }
+    
+    .badge-count {
+        background-color: #4682b4;
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+    }
+    
     .table-container {
         overflow-x: auto;
         border-radius: 8px;
@@ -220,32 +291,96 @@
     </div>
 
     <div class="dashboard-grid">
-        <!-- Moje lekce -->
-        <div class="card">
+        <!-- Moje lekce - PLNÁ TABULKA -->
+        <div class="card lessons-full-section">
             <div class="card-header">
                 <h3 class="card-title"><i class="fas fa-dumbbell"></i> Moje lekce</h3>
             </div>
             <div class="card-body">
                 {% with lessons=request.user.instructor_lessons.all %}
                     {% if lessons %}
-                        <ul class="lesson-list">
-                            {% for l in lessons|slice:':5' %}
-                                <li>{{ l.title }} – {{ l.date|date:'d.m.Y' }} {{ l.start_time }}</li>
-                            {% endfor %}
-                        </ul>
-                        {% if lessons.count > 5 %}
-                            <p class="empty-state">... a dalších {{ lessons.count|add:"-5" }} lekcí</p>
-                        {% endif %}
+                        <div class="table-container">
+                            <table class="lessons-table">
+                                <thead>
+                                    <tr>
+                                        <th>Název</th>
+                                        <th>Kategorie</th>
+                                        <th>Datum</th>
+                                        <th>Čas</th>
+                                        <th>Kapacita</th>
+                                        <th>Cena</th>
+                                        <th>Lokace</th>
+                                        <th>Termíny</th>
+                                        <th>Akce</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lesson in lessons %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ lesson.title }}</strong>
+                                            {% if lesson.description %}
+                                            <br><small style="color: #6c757d;">{{ lesson.description|truncatewords:8 }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if lesson.category %}
+                                            <span class="badge-category">{{ lesson.category.name }}</span>
+                                            {% else %}
+                                            <span class="badge-category badge-secondary">Nezařazeno</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ lesson.date|date:"d.m.Y" }}</td>
+                                        <td>{{ lesson.start_time|time:"H:i" }}</td>
+                                        <td>{{ lesson.capacity }} osob</td>
+                                        <td><strong>{{ lesson.price|floatformat:0 }} Kč</strong></td>
+                                        <td>{{ lesson.location|default:"—" }}</td>
+                                        <td>
+                                            <span class="badge-count">{{ lesson.timeslot_set.count }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="lesson-actions">
+                                                <a href="{% url 'bookings:instructor_lesson_detail' lesson.pk %}" 
+                                                   class="btn btn-sm" 
+                                                   style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);"
+                                                   title="Detail lekce">
+                                                    <i class="fas fa-eye"></i> Detail
+                                                </a>
+                                                <a href="{% url 'bookings:lesson_edit' lesson.pk %}" 
+                                                   class="btn btn-sm" 
+                                                   style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: #000;"
+                                                   title="Upravit">
+                                                    <i class="fas fa-edit"></i> Upravit
+                                                </a>
+                                                <a href="{% url 'bookings:timeslot_add' lesson.pk %}" 
+                                                   class="btn btn-success btn-sm" 
+                                                   title="Přidat termín">
+                                                    <i class="fas fa-calendar-plus"></i> Termín
+                                                </a>
+                                                <a href="{% url 'bookings:lesson_delete' lesson.pk %}" 
+                                                   class="btn btn-sm" 
+                                                   style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);"
+                                                   title="Smazat"
+                                                   onclick="return confirm('Opravdu chcete smazat lekci {{ lesson.title }}?');">
+                                                    <i class="fas fa-trash"></i> Smazat
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     {% else %}
-                        <p class="empty-state">Zatím nemáte vytvořené žádné lekce.</p>
+                        <div class="empty-state" style="text-align: center; padding: 2rem;">
+                            <i class="fas fa-dumbbell" style="font-size: 2rem; color: #4682b4; display: block; margin-bottom: 0.5rem;"></i>
+                            <p>Zatím nemáte vytvořené žádné lekce.</p>
+                        </div>
                     {% endif %}
                 {% endwith %}
-                <div class="btn-group">
-                    <a class="btn" href="{% url 'bookings:instructor_lessons' %}">
-                        <i class="fas fa-list"></i> Správa lekcí
-                    </a>
+                <div class="btn-group" style="margin-top: 1rem;">
                     <a class="btn btn-success" href="{% url 'bookings:lesson_create' %}">
-                        <i class="fas fa-plus"></i> Nová lekce
+                        <i class="fas fa-plus"></i> Přidat novou lekci
                     </a>
                 </div>
             </div>

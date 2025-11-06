@@ -1,15 +1,15 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import TimeSlot, Booking, Lesson, Category
 from .forms import TimeSlotForm
 from django.utils import timezone
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.views import View
 from datetime import datetime
+from accounts.mixins import InstructorRequiredMixin
 
 class CalendarView(TemplateView):
     template_name = 'bookings/calendar.html'
@@ -180,15 +180,7 @@ class BookingCancelView(LoginRequiredMixin, View):
 
 
 # ===== INSTRUCTOR VIEWS =====
-
-class InstructorRequiredMixin(UserPassesTestMixin):
-    """Mixin který zajistí, že pouze instruktor má přístup k view."""
-    def test_func(self):
-        return self.request.user.is_authenticated and self.request.user.user_type == 'instructor'
-    
-    def handle_no_permission(self):
-        messages.error(self.request, "K této stránce nemáte přístup.")
-        return redirect('about')
+# InstructorRequiredMixin je nyní importován z accounts.mixins
 
 
 class InstructorLessonListView(InstructorRequiredMixin, ListView):

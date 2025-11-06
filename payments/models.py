@@ -28,7 +28,7 @@ class Payment(models.Model):
         limit_choices_to={'user_type': 'instructor'}
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending', db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True)
     
@@ -95,8 +95,8 @@ class TopUp(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     variable_symbol = models.CharField(max_length=20, help_text='Variabilní symbol, typicky ID klienta.')
     message = models.CharField(max_length=70, blank=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending', db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True)
     credited_at = models.DateTimeField(null=True, blank=True, help_text='Kdy byly připsány kredity (po potvrzení).')
 

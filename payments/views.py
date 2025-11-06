@@ -1,14 +1,11 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from .models import Payment, TopUp
-from decimal import Decimal
+from accounts.mixins import InstructorRequiredMixin
 
 User = get_user_model()
 
@@ -94,11 +91,6 @@ class TopUpHistoryView(LoginRequiredMixin, ListView):
 
 	def get_queryset(self):
 		return TopUp.objects.filter(user=self.request.user).order_by('-created_at')
-
-
-class InstructorRequiredMixin(UserPassesTestMixin):
-	def test_func(self):
-		return getattr(self.request.user, 'user_type', None) == 'instructor'
 
 
 class TopUpApproveListView(LoginRequiredMixin, InstructorRequiredMixin, ListView):
