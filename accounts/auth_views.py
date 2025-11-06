@@ -1,6 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 from .forms import UserLoginForm
+
 
 class CustomLoginView(auth_views.LoginView):
     """Vlastní LoginView, který po přihlášení přesměruje podle typu uživatele."""
@@ -12,8 +14,8 @@ class CustomLoginView(auth_views.LoginView):
         user = self.request.user
         if user.is_authenticated:
             if user.user_type == 'instructor':
-                return '/accounts/instructor/dashboard/'
+                return reverse_lazy('accounts:instructor_dashboard')
             elif user.user_type == 'client':
-                return '/accounts/client/dashboard/'
+                return reverse_lazy('accounts:client_dashboard')
         # Fallback na stránku O mě
-        return '/o-me/'
+        return reverse_lazy('about')
