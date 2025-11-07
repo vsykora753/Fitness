@@ -888,7 +888,16 @@ nav a:hover {
 
   .flex-sidebar {
     flex: 0 0 auto;
-    min-height: 200px; /* minimální výška na mobilu */
+    min-height: 240px; /* mírně vyšší, aby se vešel celý obrázek */
+    /* Na mobilu chceme zobrazit celý obrázek bez ořezu */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  /* Vypneme překryvný gradient, který by mohl část obrázku překrývat */
+  .flex-sidebar::after {
+    display: none;
   }
 
   .flex-main {
