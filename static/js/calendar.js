@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('lessonsData (raw):', lessonsData);
     let currentDate = new Date(lessonsData.year, lessonsData.month - 1, 1);
     let selectedPopup = null;
 
@@ -25,20 +24,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
 
-        let startDay = firstDay.getDay() - 1;
-        if (startDay === -1) startDay = 6;
+        // JavaScript: 0=neděle, 1=pondělí, ..., 6=sobota
+        // Kalendář: Po=0, Út=1, ..., Ne=6
+        // Převod: (jsDay + 6) % 7
+        let startDay = (firstDay.getDay() + 6) % 7;
 
         const prevMonthDays = startDay;
         const prevMonth = new Date(year, month, 0);
 
+        // První týden - dny z předchozího měsíce
         for (let i = prevMonthDays - 1; i >= 0; i--) {
             addDayToCalendar(prevMonth.getDate() - i, true);
         }
 
+        // Dny aktuálního měsíce
         for (let day = 1; day <= lastDay.getDate(); day++) {
             addDayToCalendar(day, false);
         }
 
+        // Dny následujícího měsíce
         const remainingDays = 42 - (prevMonthDays + lastDay.getDate());
         for (let day = 1; day <= remainingDays; day++) {
             addDayToCalendar(day, true);
@@ -73,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 dayElement.appendChild(dotsContainer);
 
-                // ✅ Zobrazení všech lekcí přímo v buňce
+                // Zobrazení lekcí přímo v buňce
                 const lessonsPreview = document.createElement('div');
                 lessonsPreview.className = 'lessons-preview';
 
@@ -84,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     item.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        // Přesměrování na detail lekce
                         const detailUrl = lessonDetailBase.replace(/0\/$/, `${lesson.id}/`);
                         window.location.href = detailUrl;
                     });
@@ -94,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 dayElement.appendChild(lessonsPreview);
 
-                // Kliknutí mimo lekce otevře popup
                 dayElement.addEventListener('click', (e) => {
                     if (!e.target.classList.contains('lesson-preview-item')) {
                         showLessonsPopup(dayElement, lessons);
@@ -142,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
         dayElement.appendChild(popupContainer);
         selectedPopup = popupContainer;
 
-        // Zavření popupu při kliknutí mimo
         document.addEventListener('click', function closePopup(e) {
             if (!popupContainer.contains(e.target) && !dayElement.contains(e.target)) {
                 popupContainer.remove();
@@ -153,7 +154,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function getLessonsForDay(day) {
-        const all = lessonsData.lessons[day] || [];
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + 1;
+        const monthKey = `${year}-${month}`;
+        const monthData = lessonsData.allMonths[monthKey] || {};
+        const all = monthData[day] || [];
+        
         if (activeCategory === 'all') return all;
         return all.filter(l => l.category === activeCategory);
     }

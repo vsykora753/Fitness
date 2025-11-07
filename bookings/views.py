@@ -60,18 +60,51 @@ class LessonListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Získáme všechny time_sloty pro aktuální měsíc
         current_date = timezone.now()
-        start_of_month = current_date.replace(day=1)
-        next_month = current_date.replace(day=1) + timezone.timedelta(days=32)
-        end_of_month = next_month.replace(day=1) - timezone.timedelta(days=1)
+        
+        # Kategorie pro ouška - načteme z databáze
+        categories = [(cat.slug, cat.name) for cat in Category.objects.all().order_by('order', 'name')]
+
+        # Načteme data pro aktuální měsíc + 5 měsíců dopředu (celkem 6 měsíců)
+        all_lessons_by_month = {}
+        for month_offset in range(6):
+            # Vypočítáme rok a měsíc
+            target_month = current_date.month + month_offset
+            target_year = current_date.year
+            
+            # Ošetříme přechod přes konec roku
+            while target_month > 12:
+                target_month -= 12
+                target_year += 1
+            
+            month_key = f"{target_year}-{target_month}"
+            all_lessons_by_month[month_key] = self._get_lessons_for_month(target_year, target_month)
+
+        context['all_lessons_by_month'] = all_lessons_by_month
+        context['current_month'] = current_date.month
+        context['current_year'] = current_date.year
+        context['categories'] = categories
+        return context
+    
+    def _get_lessons_for_month(self, year, month):
+        """Pomocná metoda pro získání lekcí pro daný měsíc"""
+        from datetime import datetime
+        
+        # První den měsíce
+        start_of_month = timezone.make_aware(datetime(year, month, 1))
+        
+        # Poslední den měsíce
+        if month == 12:
+            end_of_month = timezone.make_aware(datetime(year + 1, 1, 1)) - timezone.timedelta(seconds=1)
+        else:
+            end_of_month = timezone.make_aware(datetime(year, month + 1, 1)) - timezone.timedelta(seconds=1)
         
         # Získáme pouze budoucí sloty v daném měsíci
         now = timezone.now()
         time_slots = TimeSlot.objects.filter(
             start_time__gte=max(start_of_month, now),
             start_time__lte=end_of_month
-        ).select_related('lesson', 'lesson__instructor').order_by('start_time')
+        ).select_related('lesson', 'lesson__instructor', 'lesson__category').order_by('start_time')
 
         # Klíčujeme podle YYYY-MM-DD
         lessons_by_day = {}
@@ -99,14 +132,7 @@ class LessonListView(ListView):
                 'location': slot.lesson.location
             })
         
-        # Kategorie pro ouška - načteme z databáze
-        categories = [(cat.slug, cat.name) for cat in Category.objects.all().order_by('order', 'name')]
-
-        context['lessons_by_day'] = lessons_by_day
-        context['current_month'] = current_date.month
-        context['current_year'] = current_date.year
-        context['categories'] = categories
-        return context
+        return lessons_by_day
 
 class LessonDetailView(DetailView):
     model = Lesson
@@ -241,23 +267,48 @@ class LessonUpdateView(InstructorRequiredMixin, UpdateView):
         return Lesson.objects.filter(instructor=self.request.user)
     
     def form_valid(self, form):
+        # Před uložením si uložíme původní hodnoty datumu a času
+        old_lesson = Lesson.objects.get(pk=self.object.pk)
+        old_date = old_lesson.date
+        old_time = old_lesson.start_time
+        
         response = super().form_valid(form)
         lesson = self.object
-        try:
-            new_start = datetime.combine(lesson.date, lesson.start_time)
-            if timezone.is_naive(new_start):
-                new_start = timezone.make_aware(new_start, timezone.get_current_timezone())
+        
+        # Zkontrolujeme, zda se změnil datum nebo čas
+        date_changed = old_date != lesson.date
+        time_changed = old_time != lesson.start_time
+        
+        if date_changed or time_changed:
+            try:
+                new_start = datetime.combine(lesson.date, lesson.start_time)
+                if timezone.is_naive(new_start):
+                    new_start = timezone.make_aware(new_start, timezone.get_current_timezone())
 
-            # Zkusíme upravit první existující slot pro tuto lekci
-            slot = TimeSlot.objects.filter(lesson=lesson).order_by('start_time').first()
-            if slot:
-                slot.start_time = new_start
-                slot.is_available = True
-                slot.save()
-            else:
-                TimeSlot.objects.create(lesson=lesson, start_time=new_start, is_available=True)
-        except Exception as e:
-            messages.warning(self.request, f"Lekce byla aktualizována, ale nepodařilo se upravit/vytvořit termín: {e}")
+                # Aktualizujeme VŠECHNY timesloty této lekce, které měly původní datum/čas
+                old_start = datetime.combine(old_date, old_time)
+                if timezone.is_naive(old_start):
+                    old_start = timezone.make_aware(old_start, timezone.get_current_timezone())
+                
+                # Najdeme timesloty s původním časem a aktualizujeme je
+                updated_count = TimeSlot.objects.filter(
+                    lesson=lesson,
+                    start_time=old_start
+                ).update(start_time=new_start)
+                
+                # Pokud neexistuje žádný timeslot, vytvoříme nový
+                if updated_count == 0:
+                    existing_slots = TimeSlot.objects.filter(lesson=lesson).count()
+                    if existing_slots == 0:
+                        TimeSlot.objects.create(lesson=lesson, start_time=new_start, is_available=True)
+                        messages.info(self.request, "Byl vytvořen nový termín lekce.")
+                    else:
+                        messages.warning(self.request, f"Změny data/času nebyly aplikovány na existující termíny. Upravte je ručně v detailu lekce.")
+                else:
+                    messages.info(self.request, f"Bylo aktualizováno {updated_count} termín(ů) lekce.")
+                    
+            except Exception as e:
+                messages.warning(self.request, f"Lekce byla aktualizována, ale nepodařilo se upravit termíny: {e}")
 
         messages.success(self.request, f"Lekce '{lesson.title}' byla úspěšně aktualizována.")
         return response

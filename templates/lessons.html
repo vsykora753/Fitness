@@ -4,11 +4,11 @@
 {% block title %}Lekce | Fitness Lektor{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}?v=5">
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/calendar.js' %}"></script>
+<script src="{% static 'js/calendar.js' %}?v=5"></script>
 {% endblock %}
 
 {% block body_class %}no-hero{% endblock %}
@@ -57,14 +57,14 @@
 </template>
 
 <!-- Data pro JavaScript -->
-{{ lessons_by_day|json_script:"lessons-by-day-data" }}
+{{ all_lessons_by_month|json_script:"all-lessons-data" }}
 <script>
-    // Načteme bezpečně serializovaná data
-    const lessonsByDay = JSON.parse(document.getElementById('lessons-by-day-data').textContent || '{}');
+    // Načteme bezpečně serializovaná data pro všechny měsíce
+    const allLessonsData = JSON.parse(document.getElementById('all-lessons-data').textContent || '{}');
     const lessonsData = {
         month: {{ current_month }},
         year: {{ current_year }},
-        lessons: lessonsByDay
+        allMonths: allLessonsData  // Všechna data pro 6 měsíců
     };
     // base url pro detail lekce (např. /bookings/lesson/0/) - nahradíme poslední ID
     const lessonDetailBase = "{% url 'bookings:lesson_detail' 0 %}";

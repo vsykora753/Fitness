@@ -29,12 +29,16 @@
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     margin-bottom: 30px;
-    overflow-x: auto; /* scroll na malých obrazovkách */
+    overflow-x: auto;
+    /* Shared grid for header and day cells to ensure proper column alignment */
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
 }
 
 .calendar-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    /* Header cells participate in parent grid */
+    display: contents;
     text-align: center;
     font-weight: bold;
     margin-bottom: 10px;
@@ -42,9 +46,8 @@
 }
 
 .calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    /* Day cells participate in parent grid to align under weekday headers */
+    display: contents;
 }
 
 .calendar-day {
@@ -232,7 +235,7 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/**  test **/
+/* Lesson preview in calendar cells */
 .lessons-preview {
     margin-top: 4px;
     font-size: 0.75rem;
@@ -258,7 +261,7 @@
     border-color: #b7dcff;
 }
 
-/** Responsivní úpravy **/
+/* Responsive adjustments */
 @media (max-width: 1024px) {
     .calendar {
         padding: 15px;
@@ -272,10 +275,6 @@
     .calendar-controls {
         flex-direction: column;
         align-items: stretch;
-    }
-
-    .calendar-days {
-        gap: 2px;
     }
     
     .calendar-day {
