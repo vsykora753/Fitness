@@ -1,4 +1,5 @@
-#TODO uprava
-je třeba opravit, když se přidá další termín pro lekci, tak se nezobrazí v kalendáři, jde o nastavení v lektorské dashboardu
 
-je třeba v responzibilivním zobrazení na mobilu vyřešit nezobrazení celé fotky (uříznutá hlava)
+#TODO
+prověřit akci zrušit lekci, myslím, že tam je standartní hláška exploveru, budu chtít udělat customizovanou
+
+při registraci se RegisterView, odkazuje na user typ, udělat aby byl default nastavený jako client

@@ -38,7 +38,7 @@ class UserRegisterForm(UserCreationForm):
         # Username bude email (Django vyžaduje username)
         user.username = self.cleaned_data['email']
         user.email = self.cleaned_data['email']
-        user.user_type = User.CLIENT
+        user.user_type = 'client'
         if commit:
             user.save()
         return user

@@ -9,7 +9,7 @@ class User(AbstractUser):
         ('client', 'Klient'),
     )
     
-    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
+    user_type = models.CharField(max_length=10, default='client', choices=USER_TYPE_CHOICES)
     email = models.EmailField(unique=True, blank=False)  # Email jako jedinečný identifikátor
     credits = models.DecimalField(
         max_digits=10, 
