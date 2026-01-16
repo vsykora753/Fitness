@@ -42,7 +42,7 @@ body {
   padding: 0 0 0 8px; /* vertikální padding nulován, výšku řídí --header-h */
   color: white;
   width: 100%;
-  background-color: #4682b4;
+  background-color: #FF9500;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   flex: 0 0 auto;
   font-size: 0.98rem;
@@ -68,7 +68,7 @@ body {
 
 .auth-top .login-link,
 .auth-top .register-link {
-  color: white;
+  color: black;
   padding: 6px 10px;
   text-decoration: none;
   border-radius: 4px;
@@ -143,7 +143,7 @@ nav.site-nav {
 }
 
 nav.site-nav a {
-  color: white;
+  color: #1F1F1F;
   text-decoration: none;
   font-weight: 500;
   transition: all 0.2s ease;
@@ -171,7 +171,7 @@ nav.site-nav a:hover {
 
 .header-bottom .nav-bottom-right a {
   padding: 6px 8px;
-  font-size: 0.98rem;
+  font-size: 1.3rem;
 }
 /* Přechod zleva do hlavního obsahu — drobný gradient překrývá levou hranu mainu a splyne s obrázkem */
 .flex-main::before {
@@ -209,8 +209,8 @@ nav.site-nav a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #4682b4;;
-  color: white;
+  background-color: #FF9500;;
+  color: #1F1F1F;
   height: var(--footer-h); /* užší patička */
   width: 100%;
   padding: 0 16px; /* méně vodorovného prostoru */
@@ -219,10 +219,10 @@ nav.site-nav a:hover {
 }
 
 .logo {
-  font-size: 20px; /* menší logo pro užší hlavičku */
+  font-size: 30px; /* menší logo pro užší hlavičku */
   font-weight: 600;
   text-decoration: none;
-  color: white;
+  color: #1F1F1F;
 }
 
 nav a {
@@ -285,7 +285,7 @@ nav a:hover {
 }
 
 .hero p {
-  font-size: 20px;
+  font-size: 48px;
   margin-bottom: 30px;
 }
 
@@ -293,7 +293,7 @@ nav a:hover {
 .btn {
   display: inline-block;
   padding: 12px 30px;
-  background-color: #4682b4;;
+  background-color:#FF9500;
   color: white;
   text-decoration: none;
   border-radius: 5px;
@@ -318,13 +318,9 @@ nav a:hover {
   text-align: center;
 }
 
-.about h2 {
-  font-size: 36px;
-  margin-bottom: 20px;
-  color: #2e5d3d;
-}
 
 .about p {
+  font-size: 36px;
   margin-bottom: 30px;
   color: #666;
 }
@@ -584,7 +580,7 @@ nav a:hover {
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #4682b4;
+  border-color:#FF9500;
   background-color: white;
   box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.1);
 }
@@ -611,7 +607,7 @@ nav a:hover {
 .btn-login {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, #4682b4 0%, #5a9bd4 100%);
+  background: linear-gradient(135deg,#FF9500 0%, #FF9500 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -623,7 +619,7 @@ nav a:hover {
 }
 
 .btn-login:hover {
-  background: linear-gradient(135deg, #3a6d99 0%, #4682b4 100%);
+  background: linear-gradient(135deg, #3a6d99 0%,#FF9500 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(70, 130, 180, 0.4);
 }
@@ -645,7 +641,7 @@ nav a:hover {
 }
 
 .login-footer a {
-  color: #4682b4;
+  color:#FF9500;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
@@ -714,7 +710,7 @@ nav a:hover {
 .dashboard-menu .menu-link {
   display: inline-block;
   padding: 12px 30px;
-  background-color: #4682b4;
+  background-color:#FF9500;
   color: white;
   text-decoration: none;
   border-radius: 5px;
@@ -941,7 +937,7 @@ nav a:hover {
   position: relative;
   width: 100%;
   min-height: 320px;
-  background: linear-gradient(135deg, rgba(70,130,180,0.95), rgba(70,130,180,0.65)), url('../img/hero-fitness.jpg') center/cover no-repeat;
+  background: linear-gradient(135deg, #FF9500 0%, #FF9500 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -978,16 +974,16 @@ nav a:hover {
 .about-hero-inner {
   position: relative;
   z-index: 1;
-  text-align: center;
-  color: #fff;
-  padding: 60px 20px;
+  text-align: left;
+  color: #1F1F1F;
+  padding: 60px 20px 60px 60px;
   max-width: 760px; /* zúžení obsahu hero */
-  margin: 0 auto; /* centrování */
+  margin: 0; /* zarovnání doleva */
 }
 
 .about-hero h1 {
   font-family: 'Playfair Display', serif;
-  font-size: 42px;
+  font-size: 30px;
   font-weight: 800;
   letter-spacing: 0.5px;
   text-shadow: 0 2px 18px rgba(0,0,0,0.2);
@@ -1017,14 +1013,26 @@ nav a:hover {
   padding: 28px;
 }
 
+.about-content h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color:  #1F1F1F;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+.about-content p {
+  margin-bottom: 13px;  /* nebo více pro větší mezery */
+}
+
 .about-text p {
   margin-bottom: 16px;
-  font-size: 17px;
+  font-size: 25px;
   color: #333;
 }
 
 .about-text strong {
-  color: #4682b4;
+  color:#FF9500;
 }
 
 /* Review list styling */
@@ -1071,7 +1079,7 @@ nav a:hover {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4682b4, #5f97c4);
+  background: linear-gradient(135deg,#FF9500, #5f97c4);
   color: #fff;
   display: flex;
   align-items: center;
@@ -1090,7 +1098,7 @@ nav a:hover {
   top: -22px;
   width: 2px;
   height: 22px;
-  background: linear-gradient(to bottom, #4682b4, transparent);
+  background: linear-gradient(to bottom,#FF9500, transparent);
 }
 .about-review-list .about-review-item:first-child::before { display: none; }
 
@@ -1105,4 +1113,62 @@ nav a:hover {
   .about-hero h1 { font-size: 30px; font-weight: 700; }
   .about-hero p { font-size: 16px; max-width: 90%; }
   .about-content.card { margin-top: -28px; padding: 20px; }
+}
+
+.social-links {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 5px;
+  margin-left: 15px;
+}
+
+.social-links a {
+  color: white;
+  font-size: 24px;
+  text-decoration: none;
+}
+
+.social-links a:hover {
+  opacity: 0.8;
+}
+
+/* Pricing individual full-page hero */
+.pricing-hero {
+  width: 100%;
+  height: calc(100vh - var(--header-h) - var(--footer-h));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pricing-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Three-column layout inside main content for pricing page */
+.pricing-flex {
+  display: flex;
+  gap: 0;
+  height: 100%;
+  align-items: stretch;
+}
+.pricing-flex .pricing-col {
+  flex: 1;
+}
+.pricing-flex .pricing-center {
+  flex: 2; /* center column wider */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.pricing-flex .pricing-center img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* show entire price image */
 }

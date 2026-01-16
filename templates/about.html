@@ -1,39 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}O mě | Fitness Rezervace{% endblock %}
+{% block title %}O mě | Nikola Turnerová {% endblock %}
 
 {% block content %}
-<section class="about-hero">
-    <div class="about-hero-inner">
-        <h1>Seznamte se s Nikolou Turnerovou</h1>
-        <p>Fitness není honba za dokonalostí. Je to radost, energie a skvělá nálada.</p>
-    </div>
-    <div class="about-hero-overlay"></div>
-    <div class="about-hero-gradient"></div>
-    <div class="about-hero-shape"></div>
-</section>
 
-<section class="about-section">
-    <div class="about-content card">
-        <div class="about-review-list">
-            <div class="about-review-item">
-                <div class="about-review-icon">★</div>
-                <div class="about-review-body">
-                    <p>Jen málokdo dokáže spojit hladkou eleganci pohybu s úsměvem, který by dokázal zvednout i největšího sportovního lenocha z gauče. Nikola Turnerová — 24letá fitness trenérka s nakažlivým elánem — přesně to zvládá. Představte si svět, kde dřepy nejsou trestem, ale příležitostí být lepší verzí sebe sama… a kde plank neznamená konec civilizace, ale jen další příjemný mikroboj s vlastním já. Ano, v tomhle světě je Nikola doma!</p>
+<section class="about-content">           
+        <p style="font-size: 0.98rem; font-family: 'Poppins', serif; color: #1F1F1F; margin-bottom: 20px;">Necítíte se ve svém těle dobře? Chcete mít víc energie, zhubnout, zlepšit držení těla a pohybovat se bez bolesti?</p>
+        <h2>Jmenuji se Nikola Turnerová</h2>
+        <p></p>
+        <p>Jsem rehabilitační trenérka a taneční trenérka. Pomáhám ženám i mužům cítit se ve svém těle silnější, lehčí a vyváženější.</p>
+        <p>Pracuji s těmi, kteří chtějí řešit ztuhlost, svalové disbalance, bolest či nadbytečná kila, a naučit své tělo pohybovat se funkčně, bezpečně a s radostí. </p>
+        <p> Vedu individuální tréninky i skupinové lekce, vždy přizpůsobené vašim potřebám a možnostem. Kromě rehabilitačního cvičení nabízím také taneční lekce, které přinášejí radost, lehkost a energii.</p>
+        <p></p>
 
-                    <p>Její tréninky nejsou jen série pohybů — jsou to malé dobrodružné výpravy, při kterých vás Nikola provede od první rozpažky až po vítězný high five. Povzbuzuje, směje se s vámi a občas i lehce ďábelsky dodá: „Ještě čtyři!“ (a všichni víme, že to znamená minimálně osm).</p>
 
-                    <p>Nikola má dar umět zahlédnout potenciál tam, kde vy zatím jen vidíte pár neochotných svalů. Umí motivovat tak něžně i pevně zároveň, že najednou sami sebe přistihnete, jak se těšíte na další trénink — ano, fakt těšíte!</p>
 
-                    <p>Ať už chcete získat sílu, kondici, sebevědomí nebo jen vyrovnat karmu po víkendových hříších ve formě dortíku, Nikola je ta správná parťačka. Fitness pro ni není honba za dokonalostí, ale radost, energie a hlavně dobrá nálada.</p>
 
-                    <p><strong>Takže pozor:</strong> trénink s Nikolou může způsobovat přehnanou spokojenost se životem, zlepšenou postavu a tendence dobrovolně lézt na kardio stroje. A na to už musí být člověk vážně dobrý! 💪😄</p>
-                </div>
-            </div>
+        <a href="{% url 'contact' %}" class="btn-contact">Kontaktujte mě</a>
         </div>
-    </div>
+    </section>
 </section>
+
 {% endblock %}
 
 {% block extra_js %}

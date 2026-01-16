@@ -3,13 +3,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from bookings.views import ContactView, LessonListView
-from accounts.views import AboutView
+from accounts.views import AboutView, HomeView, PricingIndividualView
 
 urlpatterns = [
-    path("", AboutView.as_view(), name="home"),
+    path("", HomeView.as_view(), name="home"),
     path("o-me/", AboutView.as_view(), name="about"),
     path("kontakt/", ContactView.as_view(), name="contact"),
     path("lekce/", LessonListView.as_view(), name="lessons"),
+    path("cenik/individual/", PricingIndividualView.as_view(), name="pricing_individual"),
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("bookings/", include(("bookings.urls", "bookings"), namespace="bookings")),

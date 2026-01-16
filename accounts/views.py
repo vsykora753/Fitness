@@ -65,6 +65,14 @@ class AboutView(TemplateView):
 		return context
 
 
+class HomeView(TemplateView):
+	template_name = 'home.html'
+
+
+class PricingIndividualView(TemplateView):
+	template_name = 'pricing_individual.html'
+
+
 class AboutEditView(LoginRequiredMixin, UpdateView):
 	template_name = 'accounts/about_edit.html'
 	form_class = AboutPageForm

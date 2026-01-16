@@ -19,6 +19,11 @@
     <header class="flex-header">
         <div class="header-top">
             <div class="logo">Nikola Turnerová</div>
+            <div class="social-links">
+                <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            </div>
             <div class="auth-top">
                 {% if user.is_authenticated %}
                     <form method="post" action="{% url 'accounts:logout' %}" style="display:inline; margin:0;">
@@ -36,6 +41,9 @@
             <nav class="site-nav">
                 <div class="nav-bottom-right">
                     <a href="{% url 'about' %}">O mě</a>
+                    <a href="">Přehled služeb</a>
+                    <a href="">Skupinové lekce</a>
+                    <a href="{% url 'pricing_individual' %}">Ceník</a>
                     <a href="{% url 'lessons' %}">Rozvrh lekcí</a>
                     <a href="{% url 'contact' %}">Kontakt</a>
                     {% if user.is_authenticated %}

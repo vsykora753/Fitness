@@ -9,7 +9,7 @@
 }
 
 .calendar-controls button {
-    background-color: #4682b4;
+    background-color:#FF9500;
     border: none;
     padding: 8px 16px;
     color: white;
@@ -42,7 +42,7 @@
     text-align: center;
     font-weight: bold;
     margin-bottom: 10px;
-    color: #4682b4;
+    color:#FF9500;
 }
 
 .calendar-days {
@@ -90,7 +90,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: #4682b4;
+    background-color:#FF9500;
 }
 
 .calendar-day .lesson-preview {
@@ -104,12 +104,12 @@
 }
 
 .calendar-day.selected {
-    background-color: #4682b4;
+    background-color:#FF9500;
     color: white;
 }
 
 .calendar-day.today {
-    border: 2px solid #4682b4;
+    border: 2px solid#FF9500;
 }
 
 .calendar-day.other-month {
@@ -148,7 +148,7 @@
 
 .lesson-time {
     font-weight: bold;
-    color: #4682b4;
+    color:#FF9500;
     font-size: 1.1em;
     margin-bottom: 4px;
 }
@@ -176,7 +176,7 @@
 }
 
 .lesson-price {
-    color: #4682b4;
+    color:#FF9500;
     font-weight: 500;
 }
 
@@ -189,7 +189,7 @@
 
 .daily-lessons h3 {
     margin-bottom: 20px;
-    color: #4682b4;
+    color:#FF9500;
 }
 
 .lessons-list {
@@ -217,7 +217,7 @@
 }
 
 .category-tab.active {
-    background: #4682b4;
+    background:#FF9500;
     color: white;
     border-color: #3a6d96;
 }
