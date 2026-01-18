@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "accounts",
     "bookings",
     "payments",
+    
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

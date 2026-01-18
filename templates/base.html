@@ -40,10 +40,10 @@
         <div class="header-bottom">
             <nav class="site-nav">
                 <div class="nav-bottom-right">
-                    <a href="{% url 'about' %}">O mě</a>
+                    <a href="{% url 'home' %}">O mě</a>
                     <a href="">Přehled služeb</a>
                     <a href="">Skupinové lekce</a>
-                    <a href="{% url 'pricing_individual' %}">Ceník</a>
+                    <a href="{% url 'pricing_list' %}">Ceník</a>
                     <a href="{% url 'lessons' %}">Rozvrh lekcí</a>
                     <a href="{% url 'contact' %}">Kontakt</a>
                     {% if user.is_authenticated %}

@@ -1172,3 +1172,43 @@ nav a:hover {
   height: 100%;
   object-fit: contain; /* show entire price image */
 }
+/* ...existing code... */
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.pricing-item {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+    text-align: center;
+}
+
+.pricing-service {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.pricing-price {
+    color: #007bff;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.pricing-notes {
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* Responzivní úpravy pro menší obrazovky */
+@media (max-width: 768px) {
+    .pricing-grid {
+        grid-template-columns: 1fr; /* Na mobilu 1 sloupec */
+    }
+}
+
+/* ...existing code... */

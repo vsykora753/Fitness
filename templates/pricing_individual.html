@@ -4,13 +4,37 @@
 {% block title %}Ceník individuálních lekcí{% endblock %}
 
 {% block content %}
+<h2 class="pricing-heading">Ceník individuálních lekcí</h2>
 <section class="pricing-flex">
     <div class="pricing-col"></div>
-    <div class="pricing-col pricing-center">
-        <img src="{% static 'img/cenik_individual.jpeg' %}" alt="Ceník individuálních lekcí">
+    <div class="pricing-col pricing-center">   
+        <div class="pricing-grid">
+            <div class="pricing-item">
+                <div class="pricing-service">12 MĚSÍCŮ</div>
+                <div class="pricing-price">3800 CZK/měsíc</div>
+                <div class="pricing-notes">2 x týdně</div>
+            </div>
+            <div class="pricing-item">
+                <div class="pricing-service">6 MĚSÍCŮ</div>
+                <div class="pricing-price">4000 CZK/měsíc</div>
+                <div class="pricing-notes">2 x týdně</div>
+            </div>
+            <div class="pricing-item">
+                <div class="pricing-service">3 MĚSÍCE</div>
+                <div class="pricing-price">4200 CZK/měsíc</div>
+                <div class="pricing-notes">2 x týdně</div>
+            </div>
+            <div class="pricing-item">
+                <div class="pricing-service">1 MĚSÍC</div>
+                <div class="pricing-price">4400 CZK</div>
+                <div class="pricing-notes">2 x týdně</div>
+            </div>
+            <!-- Přidejte další položky podle potřeby -->
+        </div>
     </div>
     <div class="pricing-col"></div>
 </section>
+<div>Vstupní komplexní diagnostika k balíčku zdarma.</div>
 {% endblock %}
 
 {% block extra_js %}{% endblock %}
