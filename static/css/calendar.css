@@ -32,7 +32,7 @@
     overflow-x: auto;
     /* Shared grid for header and day cells to ensure proper column alignment */
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 5px;
 }
 
@@ -61,6 +61,7 @@
     min-height: 100px;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .calendar-day:hover {
@@ -101,6 +102,11 @@
     gap: 3px;
     overflow-y: auto;
     max-height: calc(100% - 25px);
+    min-width: 0;
+}
+
+.lesson-preview-item {
+    min-width: 0;
 }
 
 .calendar-day.selected {
@@ -289,13 +295,41 @@
 }
 
 @media (max-width: 480px) {
+    .calendar {
+        padding: 12px;
+        min-width: 0;
+    }
+
+    .calendar-header,
+    .calendar-days {
+        min-width: 0;
+    }
+
+    .calendar-header {
+        font-size: 0.75rem;
+    }
+
     .calendar-day {
         font-size: 0.75em;
         min-height: 70px;
+        padding: 4px;
+        aspect-ratio: 0.9;
     }
     
+    .calendar-day .day-number {
+        top: 4px;
+        right: 4px;
+        font-size: 0.75rem;
+    }
+
+    .calendar-day .lesson-preview {
+        margin-top: 18px;
+        font-size: 0.7rem;
+    }
+
     .lesson-preview-item {
         font-size: 0.65rem;
+        white-space: normal;
     }
     
     .calendar-controls button {
